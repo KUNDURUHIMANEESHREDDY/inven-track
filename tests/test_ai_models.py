@@ -111,8 +111,8 @@ def test_model_isolation_and_validation(client):
     assert client.put("/api/ai/bots/staff", json={"modelId": one}).status_code == 404
     assert client.put("/api/ai/bots/undefined", json={"modelId": None}).status_code == 404
     assert client.post("/api/ai/chat", json={"bot": "undefined", "message": "hi"}).status_code == 404
-    assert client.post("/api/ai/models", json=model_input(endpoint="http://127.0.0.1:8000")).status_code == 422
-    assert client.post("/api/ai/models", json=model_input(endpoint="https://example.com/path?x=1")).status_code == 422
+    assert client.post("/api/ai/models", json=model_input(provider="custom", endpoint="http://127.0.0.1:8000")).status_code == 422
+    assert client.post("/api/ai/models", json=model_input(provider="custom", endpoint="https://example.com/path?x=1")).status_code == 422
 
 
 def test_provider_protocols_and_private_endpoint_blocking(monkeypatch):
@@ -203,3 +203,39 @@ def test_endpoint_reports_actionable_error_without_echoing_secrets(endpoint, exp
     assert expected in str(exc.value.detail)
     assert "secret" not in str(exc.value.detail)
     assert "user:pass" not in str(exc.value.detail)
+
+
+def test_builtin_provider_endpoint_is_server_managed_and_custom_stays_strict(client):
+    create_owner(client)
+    # The API must use the canonical built-in URL even if a form submits a
+    # stale/bad URL or a mismatched protocol.
+    payload = model_input(provider="9router", protocol="anthropic",
+                          endpoint="http://example.invalid/v1?key=unsafe",
+                          modelId="if/qwen3-coder-plus")
+    result = client.post("/api/ai/models", json=payload)
+    assert result.status_code == 201, result.text
+    model = result.json()
+    assert model["endpoint"] == ai_models.PROVIDERS["9router"]["endpoint"]
+    assert model["protocol"] == "openai"
+    assert "unsafe" not in result.text
+    updated = client.put(f"/api/ai/models/{model['id']}", json=model_input(
+        provider="gemini", protocol="openai",
+        endpoint="http://localhost:1111", modelId="gemini-2.5-flash", apiKey=""))
+    assert updated.status_code == 200, updated.text
+    assert updated.json()["endpoint"] == ai_models.PROVIDERS["gemini"]["endpoint"]
+    assert updated.json()["protocol"] == "gemini"
+    missing = client.post("/api/ai/models", json={
+        "name": "Missing custom endpoint", "provider": "custom", "protocol": "openai",
+        "modelId": "test-model"})
+    assert missing.status_code == 422
+    assert len(client.get("/api/ai/config").json()["models"]) == 1
+
+
+def test_builtin_provider_can_save_without_typing_endpoint(client):
+    create_owner(client)
+    response = client.post("/api/ai/models", json={
+        "name": "OpenAI", "provider": "openai", "modelId": "gpt-4.1-mini",
+        "apiKey": "a-test-api-key"})
+    assert response.status_code == 201, response.text
+    assert response.json()["endpoint"] == "https://api.openai.com/v1"
+    assert response.json()["hasKey"] is True

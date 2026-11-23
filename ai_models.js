@@ -51,17 +51,26 @@
     function endpointHint() {
         const provider = registry.providers[byId('ai-provider').value];
         const preset = provider && provider.endpoint;
+        const managed = Boolean(preset);
+        const input = byId('ai-endpoint');
         const hint = byId('ai-endpoint-hint');
         const reset = byId('ai-reset-endpoint');
-        if (hint) hint.textContent = preset
-            ? 'Use the API base URL only: ' + preset + '. Do not include ?keys or /chat/completions.'
-            : 'HTTPS API base URL only. Do not include ?keys or /chat/completions.';
-        if (reset) reset.classList.toggle('hidden', !preset);
+        // A selected built-in provider always uses the audited server preset.
+        // Custom providers alone allow arbitrary (HTTPS-only) API base URLs.
+        if (input) {
+            input.readOnly = managed;
+            if (managed) input.value = preset;
+            input.classList.toggle('cursor-not-allowed', managed);
+        }
+        const protocol = byId('ai-protocol');
+        if (protocol) protocol.disabled = managed;
+        if (hint) hint.textContent = managed
+            ? 'Automatically configured for ' + provider.label + '. Select Custom endpoint to use your own URL.'
+            : 'Enter your provider HTTPS API base URL. Do not include ?keys or /chat/completions.';
+        if (reset) reset.classList.add('hidden');
     }
     window.aiResetEndpoint = function() {
-        const provider = registry.providers[byId('ai-provider').value];
-        if (!provider || !provider.endpoint) return;
-        byId('ai-endpoint').value = provider.endpoint;
+        endpointHint();
         showSaveError('');
     };
     async function request(url, init) {
@@ -249,7 +258,15 @@
         };
         btn.disabled = true; btn.classList.add('opacity-60');
         try {
-            payload.endpoint = cleanEndpoint(payload.endpoint);
+            const selected = registry.providers[payload.provider];
+            if (!selected) throw new Error('Select an AI provider before saving.');
+            if (payload.provider === 'custom') {
+                payload.endpoint = cleanEndpoint(payload.endpoint);
+            } else {
+                // Use the provider catalog, not a stale/edited URL in the form.
+                payload.endpoint = selected.endpoint;
+                payload.protocol = selected.protocol;
+            }
             byId('ai-endpoint').value = payload.endpoint;
             await request(id ? '/api/ai/models/' + id : '/api/ai/models', {
                 method: id ? 'PUT' : 'POST', body: JSON.stringify(payload)

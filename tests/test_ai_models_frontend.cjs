@@ -31,23 +31,36 @@ function mockForm(status, detail) {
     element('ai-clear-key');
     element('ai-save-model');
     element('ai-save-error');
+    element('ai-endpoint-hint');
+    element('ai-reset-endpoint');
+    element('ai-key-note');
     const sandbox = {
         URL,
         window: {},
         document: { getElementById: id => elements[id] || null, addEventListener() {} },
-        fetch: async (_url, options) => {
+        fetch: async (url, options) => {
+            if (url === '/api/ai/config') {
+                return { ok: true, status: 200, json: async () => ({
+                    models: [], bots: [], providers: {
+                        custom: { label: 'Custom endpoint', endpoint: '', protocol: 'openai', model: '' },
+                        openai: { label: 'OpenAI', endpoint: 'https://api.openai.com/v1', protocol: 'openai', model: 'gpt-4.1-mini' },
+                        '9router': { label: '9Router', endpoint: 'https://9router.com/v1', protocol: 'openai', model: 'if/qwen3-coder-plus' }
+                    }
+                }) };
+            }
             sandbox.submitted = JSON.parse(options.body);
             return { ok: false, status, json: async () => ({ detail }) };
         }
     };
     vm.runInNewContext(script, sandbox, { filename: 'ai_models.js' });
-    return { sandbox, elements };
+    return { sandbox, elements, ready: sandbox.window.aiLoadSettings() };
 }
 
 test('model save displays a field-specific validation error inside the modal', async () => {
-    const { sandbox, elements } = mockForm(422, [
+    const { sandbox, elements, ready } = mockForm(422, [
         { loc: ['body', 'endpoint'], msg: 'Value error, Endpoint must be a valid HTTPS base URL', input: 'private-secret' }
     ]);
+    await ready;
     await sandbox.window.aiSaveModel({ preventDefault() {} });
     const banner = elements['ai-save-error'];
     assert.match(banner.textContent, /Base endpoint: Endpoint must be a valid HTTPS/);
@@ -58,7 +71,8 @@ test('model save displays a field-specific validation error inside the modal', a
 });
 
 test('server failures remain visible without exposing API keys', async () => {
-    const { sandbox, elements } = mockForm(500, []);
+    const { sandbox, elements, ready } = mockForm(500, []);
+    await ready;
     await sandbox.window.aiSaveModel({ preventDefault() {} });
     assert.match(elements['ai-save-error'].textContent, /HTTP 500/);
     assert.doesNotMatch(elements['ai-save-error'].textContent, /secret-cannot/);
@@ -70,16 +84,18 @@ test('modal and toast error containers appear above the content', () => {
 });
 
 test('pasted OpenAI-compatible chat route is converted to base URL', async () => {
-    const { sandbox, elements } = mockForm(500, []);
+    const { sandbox, elements, ready } = mockForm(500, []);
     elements['ai-endpoint'].value = 'https://9router.com/v1/chat/completions/';
+    await ready;
     await sandbox.window.aiSaveModel({ preventDefault() {} });
     assert.equal(sandbox.submitted.endpoint, 'https://9router.com/v1');
     assert.equal(elements['ai-endpoint'].value, 'https://9router.com/v1');
 });
 
 test('query-string credentials are rejected without sending the URL to the backend', async () => {
-    const { sandbox, elements } = mockForm(500, []);
+    const { sandbox, elements, ready } = mockForm(500, []);
     elements['ai-endpoint'].value = 'https://api.example.com/v1?key=SECRETQUERY';
+    await ready;
     await sandbox.window.aiSaveModel({ preventDefault() {} });
     assert.equal(sandbox.submitted, undefined);
     assert.match(elements['ai-save-error'].textContent, /remove the \?query/);
@@ -87,9 +103,37 @@ test('query-string credentials are rejected without sending the URL to the backe
 });
 
 test('non-HTTPS endpoint is blocked before saving', async () => {
-    const { sandbox, elements } = mockForm(500, []);
+    const { sandbox, elements, ready } = mockForm(500, []);
     elements['ai-endpoint'].value = 'http://example.com/v1';
+    await ready;
     await sandbox.window.aiSaveModel({ preventDefault() {} });
     assert.equal(sandbox.submitted, undefined);
     assert.match(elements['ai-save-error'].textContent, /use https:\/\//);
+});
+
+test('built-in 9Router ignores an invalid typed HTTP endpoint', async () => {
+    const { sandbox, elements, ready } = mockForm(500, []);
+    await ready;
+    elements['ai-provider'].value = '9router';
+    elements['ai-endpoint'].value = 'http://incorrect.invalid/v1';
+    elements['ai-protocol'].value = 'anthropic';
+    await sandbox.window.aiSaveModel({ preventDefault() {} });
+    assert.equal(sandbox.submitted.provider, '9router');
+    assert.equal(sandbox.submitted.endpoint, 'https://9router.com/v1');
+    assert.equal(sandbox.submitted.protocol, 'openai');
+});
+
+test('changing providers locks preset endpoint and unlocks custom URL', async () => {
+    const { sandbox, elements, ready } = mockForm(500, []);
+    await ready;
+    elements['ai-provider'].value = '9router';
+    sandbox.window.aiProviderChanged();
+    assert.equal(elements['ai-endpoint'].value, 'https://9router.com/v1');
+    assert.equal(elements['ai-endpoint'].readOnly, true);
+    assert.equal(elements['ai-protocol'].disabled, true);
+    assert.match(elements['ai-endpoint-hint'].textContent, /Automatically configured/);
+    elements['ai-provider'].value = 'custom';
+    sandbox.window.aiProviderChanged();
+    assert.equal(elements['ai-endpoint'].readOnly, false);
+    assert.equal(elements['ai-protocol'].disabled, false);
 });

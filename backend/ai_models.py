@@ -14,7 +14,7 @@ from pathlib import Path
 
 from cryptography.fernet import Fernet, InvalidToken
 from fastapi import APIRouter, Depends, HTTPException, Request
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, field_validator, model_validator
 
 router = APIRouter(prefix="/api/ai", tags=["AI models"])
 BOT_NAMES = {
@@ -158,10 +158,23 @@ class ModelInput(BaseModel):
     name: str = Field(min_length=1, max_length=70)
     provider: str = Field(default="custom")
     protocol: str = Field(default="openai")
-    endpoint: str = Field(min_length=1, max_length=500)
+    endpoint: str = Field(default="", max_length=500, validate_default=True)
     modelId: str = Field(min_length=1, max_length=180)
     apiKey: str = Field(default="", max_length=2048)
     clearKey: bool = False
+
+    @model_validator(mode="before")
+    @classmethod
+    def apply_provider_preset(cls, values):
+        # Built-in providers have trusted, server-owned endpoints. Clients supply
+        # only the provider, model ID and API key; custom URLs are opt-in.
+        if isinstance(values, dict):
+            provider = values.get("provider", "custom")
+            if provider in PROVIDERS and provider != "custom":
+                values = dict(values)
+                values["endpoint"] = PROVIDERS[provider]["endpoint"]
+                values["protocol"] = PROVIDERS[provider]["protocol"]
+        return values
 
     @field_validator("name", "modelId")
     @classmethod
