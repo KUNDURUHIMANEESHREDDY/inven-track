@@ -1,0 +1,62 @@
+services:
+  app:
+    build: .
+    restart: unless-stopped
+    environment:
+      INVENTRACK_DB: /data/inventory.sqlite3
+      INVENTRACK_TIMEZONE: Asia/Kolkata
+      RAZORPAY_KEY_ID: ${RAZORPAY_KEY_ID:-}
+      RAZORPAY_KEY_SECRET: ${RAZORPAY_KEY_SECRET:-}
+      RAZORPAY_WEBHOOK_SECRET: ${RAZORPAY_WEBHOOK_SECRET:-}
+      RAZORPAY_MODE: ${RAZORPAY_MODE:-test}
+      ENABLE_LIVE_PAYMENTS: ${ENABLE_LIVE_PAYMENTS:-NO}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+    volumes:
+      - app_data:/data
+    expose:
+      - "8000"
+    networks:
+      - private
+
+  backups:
+    build: .
+    restart: unless-stopped
+    command: ["python", "-m", "backend.backup", "schedule", "--interval-seconds", "86400", "--keep", "30"]
+    environment:
+      INVENTRACK_DB: /data/inventory.sqlite3
+      INVENTRACK_BACKUP_DIR: /backups
+      INVENTRACK_BACKUP_KEY: ${INVENTRACK_BACKUP_KEY:?Set an encryption key in .env}
+    volumes:
+      - app_data:/data
+      - backup_data:/backups
+    networks:
+      - private
+    depends_on:
+      - app
+
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    environment:
+      DOMAIN: ${DOMAIN:?Set your actual DNS domain in .env}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    networks:
+      - private
+    depends_on:
+      - app
+
+networks:
+  private:
+    driver: bridge
+volumes:
+  app_data:
+  backup_data:
+  caddy_data:
+  caddy_config:

@@ -1,0 +1,1783 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VyaparFlow — Digital Inventory & Sales Management System</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter & Plus Jakarta Sans -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Plus Jakarta Sans', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#eef2ff',
+                            100: '#e0e7ff',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                            900: '#312e81',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom Scrollbar for smooth SaaS feel */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        @keyframes pulse-subtle {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+        .animate-pulse-subtle {
+            animation: pulse-subtle 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(16px) scale(0.98); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .animate-slide-up {
+            animation: slideUp 0.25s ease-out forwards;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased selection:bg-indigo-100 selection:text-indigo-800">
+
+    <!-- =====================================================================
+         1. AUTHENTICATION VIEW (OWNER LOGIN / CREATE ACCOUNT)
+    ====================================================================== -->
+    <div id="auth-screen" class="min-h-screen flex flex-col lg:flex-row bg-slate-900">
+        <!-- Left Brand & Project Blueprint Showcase Panel -->
+        <div class="lg:w-5/12 bg-gradient-to-br from-indigo-950 via-slate-900 to-slate-950 text-white p-8 lg:p-12 flex flex-col justify-between relative overflow-hidden">
+            <!-- Subtle decorative grid/glow -->
+            <div class="absolute -top-24 -left-24 w-72 h-72 bg-indigo-500/20 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="absolute bottom-10 right-10 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+            <div class="relative z-10">
+                <div class="inline-flex items-center gap-2.5 bg-white/10 backdrop-blur-md border border-white/15 px-3.5 py-1.5 rounded-full text-xs font-medium text-indigo-200 mb-6">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                    Project Blueprint #21 • Retail & Hospitality Tech
+                </div>
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="w-11 h-11 rounded-xl bg-indigo-600 flex items-center justify-center shadow-lg shadow-indigo-600/30">
+                        <i data-lucide="store" class="w-6 h-6 text-white"></i>
+                    </div>
+                    <div>
+                        <h1 class="font-display text-2xl font-extrabold tracking-tight text-white">VyaparFlow</h1>
+                        <p class="text-xs text-slate-400">Digital Inventory & Sales Management</p>
+                    </div>
+                </div>
+                <h2 class="font-display text-3xl lg:text-4xl font-bold leading-tight mb-4">
+                    Smart Billing & Stock Control for <span class="text-indigo-400">Small Businesses.</span>
+                </h2>
+                <p class="text-slate-300 text-sm leading-relaxed mb-8">
+                    Built specifically for Indian <strong>Hotels, Supermarts, and General Stores</strong>. Streamline daily POS billing, automate low-stock alerts, track ₹ revenue analytics, and onboard new staff effortlessly with a built-in AI Assistant.
+                </p>
+
+                <!-- Feature Highlights -->
+                <div class="space-y-3.5 text-sm">
+                    <div class="flex items-start gap-3 bg-white/5 border border-white/10 p-3.5 rounded-xl">
+                        <div class="p-2 rounded-lg bg-emerald-500/20 text-emerald-400 shrink-0">
+                            <i data-lucide="receipt" class="w-4 h-4"></i>
+                        </div>
+                        <div>
+                            <p class="font-semibold text-white">Real-Time POS Billing & Auto Stock Sync</p>
+                            <p class="text-xs text-slate-400 mt-0.5">Every customer bill automatically deducts inventory and updates sales KPIs.</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-3 bg-white/5 border border-white/10 p-3.5 rounded-xl">
+                        <div class="p-2 rounded-lg bg-amber-500/20 text-amber-400 shrink-0">
+                            <i data-lucide="bell-ring" class="w-4 h-4"></i>
+                        </div>
+                        <div>
+                            <p class="font-semibold text-white">Smart Low-Stock Threshold Alerts</p>
+                            <p class="text-xs text-slate-400 mt-0.5">Instant dashboard warnings with one-click restock actions.</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-3 bg-white/5 border border-white/10 p-3.5 rounded-xl">
+                        <div class="p-2 rounded-lg bg-indigo-500/20 text-indigo-300 shrink-0">
+                            <i data-lucide="bot" class="w-4 h-4"></i>
+                        </div>
+                        <div>
+                            <p class="font-semibold text-white">AI Worker Onboarding & Help Chatbot</p>
+                            <p class="text-xs text-slate-400 mt-0.5">24/7 interactive guide so any new counter worker can operate the system.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="relative z-10 pt-8 mt-8 border-t border-white/10 flex items-center justify-between text-xs text-slate-400">
+                <span>Interactive System Architecture Prototype</span>
+                <span class="text-indigo-300 font-medium">INR (₹) Enabled</span>
+            </div>
+        </div>
+
+        <!-- Right Owner Login / Account Creation Form -->
+        <div class="lg:w-7/12 bg-slate-50 flex items-center justify-center p-6 sm:p-10 lg:p-14">
+            <div class="w-full max-w-md bg-white rounded-2xl shadow-xl shadow-slate-200/70 border border-slate-200/80 p-7 sm:p-8">
+                
+                <!-- Auth Mode Tabs -->
+                <div class="grid grid-cols-2 gap-1 bg-slate-100 p-1 rounded-xl mb-6">
+                    <button type="button" id="tab-signup" onclick="switchAuthMode('signup')" class="py-2.5 text-sm font-semibold rounded-lg bg-white text-indigo-600 shadow-sm transition-all">
+                        Create Owner Account
+                    </button>
+                    <button type="button" id="tab-login" onclick="switchAuthMode('login')" class="py-2.5 text-sm font-semibold rounded-lg text-slate-600 hover:text-slate-900 transition-all">
+                        Owner Login
+                    </button>
+                </div>
+
+                <div class="mb-6">
+                    <h3 id="auth-heading" class="font-display text-xl font-bold text-slate-900">Register Your Business</h3>
+                    <p id="auth-subtext" class="text-xs text-slate-500 mt-1">Create an owner profile with email, mobile number & password to enter the dashboard.</p>
+                </div>
+
+                <!-- Validation Banner -->
+                <div id="auth-error" class="hidden mb-4 p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-medium flex items-center gap-2">
+                    <i data-lucide="alert-circle" class="w-4 h-4 shrink-0"></i>
+                    <span id="auth-error-text">Please fill in all required fields.</span>
+                </div>
+
+                <form id="auth-form" onsubmit="handleAuthSubmit(event)" class="space-y-4">
+                    <!-- Sign-Up Specific Fields -->
+                    <div id="signup-fields" class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1.5">Business / Shop Name *</label>
+                            <div class="relative">
+                                <i data-lucide="building-2" class="w-4 h-4 text-slate-400 absolute left-3.5 top-3"></i>
+                                <input type="text" id="input-biz-name" placeholder="e.g., Sri Lakshmi Supermart & Hotel" class="w-full pl-10 pr-4 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1.5">Business Category *</label>
+                            <div class="grid grid-cols-3 gap-2">
+                                <label class="cursor-pointer">
+                                    <input type="radio" name="bizType" value="Supermart" checked class="peer sr-only">
+                                    <div class="p-2.5 text-center rounded-xl border border-slate-200 bg-slate-50 peer-checked:bg-indigo-50 peer-checked:border-indigo-600 peer-checked:text-indigo-700 transition">
+                                        <i data-lucide="shopping-cart" class="w-4 h-4 mx-auto mb-1"></i>
+                                        <span class="block text-[11px] font-semibold">Supermart</span>
+                                    </div>
+                                </label>
+                                <label class="cursor-pointer">
+                                    <input type="radio" name="bizType" value="Hotel / Restaurant" class="peer sr-only">
+                                    <div class="p-2.5 text-center rounded-xl border border-slate-200 bg-slate-50 peer-checked:bg-indigo-50 peer-checked:border-indigo-600 peer-checked:text-indigo-700 transition">
+                                        <i data-lucide="utensils" class="w-4 h-4 mx-auto mb-1"></i>
+                                        <span class="block text-[11px] font-semibold">Hotel / Cafe</span>
+                                    </div>
+                                </label>
+                                <label class="cursor-pointer">
+                                    <input type="radio" name="bizType" value="General Store" class="peer sr-only">
+                                    <div class="p-2.5 text-center rounded-xl border border-slate-200 bg-slate-50 peer-checked:bg-indigo-50 peer-checked:border-indigo-600 peer-checked:text-indigo-700 transition">
+                                        <i data-lucide="package" class="w-4 h-4 mx-auto mb-1"></i>
+                                        <span class="block text-[11px] font-semibold">General Store</span>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Owner Email ID -->
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1.5">Owner Email ID *</label>
+                        <div class="relative">
+                            <i data-lucide="mail" class="w-4 h-4 text-slate-400 absolute left-3.5 top-3"></i>
+                            <input type="email" id="input-email" required placeholder="owner@business.com" class="w-full pl-10 pr-4 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition">
+                        </div>
+                    </div>
+
+                    <!-- Owner Mobile Number -->
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1.5">Owner Mobile Number *</label>
+                        <div class="relative flex">
+                            <span class="inline-flex items-center px-3 text-xs font-semibold text-slate-600 bg-slate-100 border border-r-0 border-slate-200 rounded-l-xl">
+                                +91
+                            </span>
+                            <input type="tel" id="input-mobile" required maxlength="10" pattern="[0-9]{10}" placeholder="9876543210" class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-r-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition">
+                        </div>
+                    </div>
+
+                    <!-- Password -->
+                    <div>
+                        <div class="flex items-center justify-between mb-1.5">
+                            <label id="password-label" class="block text-xs font-semibold text-slate-700">Create Owner Password *</label>
+                            <button type="button" onclick="togglePasswordVisibility()" class="text-[11px] font-medium text-indigo-600 hover:underline">Show</button>
+                        </div>
+                        <div class="relative">
+                            <i data-lucide="lock" class="w-4 h-4 text-slate-400 absolute left-3.5 top-3"></i>
+                            <input type="password" id="input-password" required minlength="4" placeholder="Enter secure password" class="w-full pl-10 pr-4 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition">
+                        </div>
+                    </div>
+
+                    <button type="submit" id="auth-submit-btn" class="w-full py-3 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-sm rounded-xl shadow-lg shadow-indigo-600/25 transition flex items-center justify-center gap-2 mt-2">
+                        <span>Create Account & Enter Dashboard</span>
+                        <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                    </button>
+                </form>
+
+                <!-- Divider & Quick Demo Login for Coordinator -->
+                <div class="relative my-6">
+                    <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-slate-200"></div></div>
+                    <div class="relative flex justify-center text-xs">
+                        <span class="px-3 bg-white text-slate-400 font-medium">For Project Demo / Presentation</span>
+                    </div>
+                </div>
+
+                <button type="button" onclick="quickDemoLogin()" class="w-full py-2.5 px-4 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 font-semibold text-xs rounded-xl transition flex items-center justify-center gap-2">
+                    <i data-lucide="zap" class="w-4 h-4 text-emerald-600"></i>
+                    <span>Quick Demo Login (Pre-filled Store Data)</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- =====================================================================
+         2. MAIN APPLICATION DASHBOARD SHELL
+    ====================================================================== -->
+    <div id="dashboard-screen" class="hidden min-h-screen flex flex-col lg:flex-row">
+        
+        <!-- Mobile Backdrop -->
+        <div id="sidebar-backdrop" onclick="toggleMobileSidebar()" class="fixed inset-0 bg-slate-900/50 z-30 hidden lg:hidden backdrop-blur-xs"></div>
+
+        <!-- Left Navigation Sidebar -->
+        <aside id="sidebar" class="fixed lg:sticky top-0 left-0 z-40 h-screen w-64 bg-slate-900 text-slate-300 flex flex-col justify-between transition-transform duration-300 -translate-x-full lg:translate-x-0 shrink-0">
+            <div>
+                <!-- Brand Header -->
+                <div class="p-5 border-b border-slate-800 flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-xl bg-indigo-600 flex items-center justify-center text-white shadow-md">
+                            <i data-lucide="store" class="w-5 h-5"></i>
+                        </div>
+                        <div>
+                            <span class="font-display font-bold text-white text-base block leading-none">VyaparFlow</span>
+                            <span class="text-[10px] text-indigo-400 font-semibold uppercase tracking-wider mt-1 block">Sales & Stock OS</span>
+                        </div>
+                    </div>
+                    <button onclick="toggleMobileSidebar()" class="lg:hidden text-slate-400 hover:text-white p-1">
+                        <i data-lucide="x" class="w-5 h-5"></i>
+                    </button>
+                </div>
+
+                <!-- Business Profile Card in Sidebar -->
+                <div class="p-4 mx-3 mt-4 rounded-xl bg-slate-800/70 border border-slate-700/70">
+                    <div class="flex items-center gap-2 mb-1">
+                        <span id="sidebar-biz-type" class="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide rounded-md bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                            Supermart
+                        </span>
+                    </div>
+                    <h4 id="sidebar-biz-name" class="font-semibold text-white text-sm truncate">Sri Balaji Supermart</h4>
+                    <p id="sidebar-owner-contact" class="text-[11px] text-slate-400 truncate mt-0.5">+91 98765 43210</p>
+                </div>
+
+                <!-- Navigation Menu -->
+                <nav class="mt-6 px-3 space-y-1.5">
+                    <p class="px-3 text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-2">Main Modules</p>
+                    
+                    <button onclick="switchTab('overview')" id="nav-overview" class="nav-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-medium bg-indigo-600 text-white shadow-md shadow-indigo-600/20 transition">
+                        <span class="flex items-center gap-3">
+                            <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+                            <span>Dashboard Reports</span>
+                        </span>
+                    </button>
+
+                    <button onclick="switchTab('billing')" id="nav-billing" class="nav-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                        <span class="flex items-center gap-3">
+                            <i data-lucide="calculator" class="w-4 h-4"></i>
+                            <span>Billing / POS Counter</span>
+                        </span>
+                        <span class="px-1.5 py-0.5 text-[10px] font-bold bg-emerald-500/20 text-emerald-300 rounded">POS</span>
+                    </button>
+
+                    <button onclick="switchTab('inventory')" id="nav-inventory" class="nav-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                        <span class="flex items-center gap-3">
+                            <i data-lucide="boxes" class="w-4 h-4"></i>
+                            <span>Digital Inventory</span>
+                        </span>
+                        <span id="nav-low-stock-badge" class="px-2 py-0.5 text-[10px] font-bold bg-amber-500 text-slate-950 rounded-full">0</span>
+                    </button>
+
+                    <button onclick="switchTab('transactions')" id="nav-transactions" class="nav-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                        <span class="flex items-center gap-3">
+                            <i data-lucide="history" class="w-4 h-4"></i>
+                            <span>Sales & Bills Log</span>
+                        </span>
+                    </button>
+                </nav>
+            </div>
+
+            <!-- Bottom Worker AI Help Prompt & Logout -->
+            <div class="p-4 border-t border-slate-800 space-y-3">
+                <div class="p-3 rounded-xl bg-gradient-to-r from-indigo-600/20 to-emerald-600/20 border border-indigo-500/30">
+                    <div class="flex items-center gap-2 text-xs font-semibold text-white mb-1">
+                        <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-400"></i>
+                        <span>New Worker Guide</span>
+                    </div>
+                    <p class="text-[11px] text-slate-300 leading-relaxed mb-2">Need help creating bills or checking stock?</p>
+                    <button onclick="toggleChatbot(true)" class="w-full py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold rounded-lg transition">
+                        Open AI Assistant
+                    </button>
+                </div>
+
+                <button onclick="logoutUser()" class="w-full flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs font-semibold text-rose-300 hover:bg-rose-500/10 border border-transparent hover:border-rose-500/20 transition">
+                    <i data-lucide="log-out" class="w-4 h-4"></i>
+                    <span>Logout Owner Session</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <div class="flex-1 flex flex-col min-w-0">
+            
+            <!-- Top Header Bar -->
+            <header class="sticky top-0 z-20 bg-white/90 backdrop-blur-md border-b border-slate-200 px-4 sm:px-8 py-3.5 flex items-center justify-between gap-4">
+                <div class="flex items-center gap-3">
+                    <button onclick="toggleMobileSidebar()" class="lg:hidden p-2 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-100">
+                        <i data-lucide="menu" class="w-5 h-5"></i>
+                    </button>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <h1 id="page-title" class="font-display font-bold text-lg sm:text-xl text-slate-900">Dashboard Overview & Reports</h1>
+                            <span class="hidden sm:inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Live Sync
+                            </span>
+                        </div>
+                        <p id="header-subtitle" class="text-xs text-slate-500 hidden sm:block">Real-time sales performance, inventory health & low-stock alerts</p>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-2.5 sm:gap-3">
+                    <!-- Quick Jump to POS -->
+                    <button onclick="switchTab('billing')" class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold shadow-sm transition">
+                        <i data-lucide="plus-circle" class="w-4 h-4"></i>
+                        <span class="hidden sm:inline">New Customer Bill</span>
+                        <span class="sm:hidden">Bill</span>
+                    </button>
+
+                    <!-- Owner Info Pill -->
+                    <div class="hidden md:flex items-center gap-2.5 pl-3 border-l border-slate-200">
+                        <div class="w-8 h-8 rounded-full bg-indigo-100 text-indigo-700 font-bold text-xs flex items-center justify-center">
+                            OW
+                        </div>
+                        <div class="text-left">
+                            <p id="header-owner-email" class="text-xs font-semibold text-slate-800 leading-none">owner@store.in</p>
+                            <p class="text-[10px] text-slate-500 mt-1">Verified Owner</p>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Toast Notification Banner -->
+            <div id="toast-container" class="fixed top-20 right-5 z-50 space-y-2 pointer-events-none"></div>
+
+            <!-- Dynamic Tab Views Container -->
+            <main class="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto space-y-6">
+
+                <!-- ===========================================================
+                     TAB 1: DASHBOARD OVERVIEW & REPORTS
+                ============================================================ -->
+                <section id="view-overview" class="space-y-6 animate-slide-up">
+                    
+                    <!-- Top 4 KPI Cards -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-5">
+                        <!-- KPI 1: Today's Total Sales -->
+                        <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs hover:shadow-md transition">
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Today's Total Sales</span>
+                                <div class="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
+                                    <i data-lucide="indian-rupee" class="w-5 h-5"></i>
+                                </div>
+                            </div>
+                            <div class="flex items-baseline gap-2">
+                                <h3 id="kpi-today-sales" class="font-display text-2xl sm:text-3xl font-extrabold text-slate-900">₹0</h3>
+                            </div>
+                            <p class="text-xs text-emerald-600 font-medium mt-2 flex items-center gap-1">
+                                <i data-lucide="trending-up" class="w-3.5 h-3.5"></i>
+                                <span>Based on saved invoices</span>
+                            </p>
+                        </div>
+
+                        <!-- KPI 2: Bills Generated -->
+                        <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs hover:shadow-md transition">
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Bills Generated</span>
+                                <div class="w-9 h-9 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
+                                    <i data-lucide="receipt" class="w-5 h-5"></i>
+                                </div>
+                            </div>
+                            <h3 id="kpi-total-bills" class="font-display text-2xl sm:text-3xl font-extrabold text-slate-900">0</h3>
+                            <p class="text-xs text-slate-500 mt-2">
+                                Avg. bill value: <span id="kpi-avg-bill" class="font-semibold text-slate-700">₹0</span>
+                            </p>
+                        </div>
+
+                        <!-- KPI 3: Low-Stock Alerts -->
+                        <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs hover:shadow-md transition">
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Low-Stock Alerts</span>
+                                <div class="w-9 h-9 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center">
+                                    <i data-lucide="alert-triangle" class="w-5 h-5"></i>
+                                </div>
+                            </div>
+                            <h3 id="kpi-low-stock" class="font-display text-2xl sm:text-3xl font-extrabold text-amber-600">0</h3>
+                            <p class="text-xs text-slate-500 mt-2">
+                                Out of <span id="kpi-total-skus" class="font-semibold text-slate-700">0</span> total catalog items
+                            </p>
+                        </div>
+
+                        <!-- KPI 4: Est. Net Profit -->
+                        <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs hover:shadow-md transition">
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Gross Profit (before expenses)</span>
+                                <div class="w-9 h-9 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center">
+                                    <i data-lucide="wallet" class="w-5 h-5"></i>
+                                </div>
+                            </div>
+                            <h3 id="kpi-net-profit" class="font-display text-2xl sm:text-3xl font-extrabold text-slate-900">₹0</h3>
+                            <p class="text-xs text-purple-600 font-medium mt-2">Excludes GST and operating expenses</p>
+                        </div>
+                    </div>
+
+                    <!-- Middle Row: Sales Analytics Chart + Low-Stock Alert Action Center -->
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                        
+                        <!-- Weekly Sales Revenue Chart (7 cols) -->
+                        <div class="lg:col-span-7 bg-white rounded-2xl p-6 border border-slate-200/80 shadow-xs flex flex-col justify-between">
+                            <div class="flex flex-wrap items-center justify-between gap-2 mb-6">
+                                <div>
+                                    <h3 class="font-display font-bold text-base text-slate-900">Weekly Sales Revenue Analytics</h3>
+                                    <p class="text-xs text-slate-500">7-day revenue trend (Today updates live with every POS bill)</p>
+                                </div>
+                                <span class="px-3 py-1 rounded-lg bg-indigo-50 text-indigo-700 text-xs font-semibold">
+                                    This Week: <span id="weekly-total-label">₹48,500</span>
+                                </span>
+                            </div>
+
+                            <!-- Interactive Bar Chart -->
+                            <div id="sales-bar-chart" class="h-56 flex items-end justify-between gap-2 sm:gap-4 pt-6 pb-2 px-2 border-b border-slate-100">
+                                <!-- Bars injected by JS -->
+                            </div>
+                            <div id="sales-bar-labels" class="flex items-center justify-between gap-2 sm:gap-4 pt-3 px-2 text-xs font-medium text-slate-500">
+                                <!-- Labels injected by JS -->
+                            </div>
+                        </div>
+
+                        <!-- Low-Stock Alerts Panel (5 cols) -->
+                        <div class="lg:col-span-5 bg-white rounded-2xl p-6 border border-slate-200/80 shadow-xs flex flex-col">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="flex items-center gap-2">
+                                    <span class="w-2.5 h-2.5 rounded-full bg-amber-500 animate-ping"></span>
+                                    <h3 class="font-display font-bold text-base text-slate-900">Low-Stock Alerts</h3>
+                                </div>
+                                <button onclick="switchTab('inventory')" class="text-xs font-semibold text-indigo-600 hover:underline">
+                                    Manage All →
+                                </button>
+                            </div>
+                            <p class="text-xs text-slate-500 mb-4">Items below minimum threshold. Click restock to replenish immediately.</p>
+
+                            <div id="low-stock-list" class="space-y-3 flex-1 overflow-y-auto max-h-64 pr-1">
+                                <!-- Low stock cards injected by JS -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Bottom Row: Top Selling Items & Recent Transactions -->
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                        <!-- Top Selling Products -->
+                        <div class="lg:col-span-5 bg-white rounded-2xl p-6 border border-slate-200/80 shadow-xs">
+                            <h3 class="font-display font-bold text-base text-slate-900 mb-1">Top-Selling Products</h3>
+                            <p class="text-xs text-slate-500 mb-4">Highest moving items across your counter</p>
+                            <div id="top-selling-list" class="space-y-3.5">
+                                <!-- Top items injected by JS -->
+                            </div>
+                        </div>
+
+                        <!-- Recent Bills Summary -->
+                        <div class="lg:col-span-7 bg-white rounded-2xl p-6 border border-slate-200/80 shadow-xs">
+                            <div class="flex items-center justify-between mb-4">
+                                <div>
+                                    <h3 class="font-display font-bold text-base text-slate-900">Recent Customer Bills</h3>
+                                    <p class="text-xs text-slate-500">Latest invoices generated at POS counter</p>
+                                </div>
+                                <button onclick="switchTab('transactions')" class="text-xs font-semibold text-indigo-600 hover:underline">View Full Log</button>
+                            </div>
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left border-collapse">
+                                    <thead>
+                                        <tr class="border-b border-slate-100 text-[11px] font-bold uppercase text-slate-400">
+                                            <th class="py-2.5 px-2">Bill ID</th>
+                                            <th class="py-2.5 px-2">Customer / Table</th>
+                                            <th class="py-2.5 px-2">Items</th>
+                                            <th class="py-2.5 px-2">Payment</th>
+                                            <th class="py-2.5 px-2 text-right">Amount</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="recent-bills-tbody" class="divide-y divide-slate-100 text-xs">
+                                        <!-- Rows injected by JS -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ===========================================================
+                     TAB 2: BILLING / POS (POINT OF SALE) COUNTER
+                ============================================================ -->
+                <section id="view-billing" class="hidden animate-slide-up">
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+                        
+                        <!-- Left: Product Catalog Selection (7 cols) -->
+                        <div class="lg:col-span-7 bg-white rounded-2xl p-5 sm:p-6 border border-slate-200/80 shadow-xs">
+                            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
+                                <div>
+                                    <h3 class="font-display font-bold text-base text-slate-900">Select Items for Billing</h3>
+                                    <p class="text-xs text-slate-500">Tap any item to add to the customer's active cart</p>
+                                </div>
+                                <!-- Search Box -->
+                                <div class="relative w-full sm:w-60">
+                                    <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-2.5"></i>
+                                    <input type="text" id="pos-search" oninput="renderPOSProducts()" placeholder="Search item name..." class="w-full pl-9 pr-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:border-indigo-500">
+                                </div>
+                            </div>
+
+                            <!-- Category Filter Pills -->
+                            <div id="pos-category-filters" class="flex items-center gap-2 overflow-x-auto pb-3 mb-4">
+                                <!-- Category buttons injected by JS -->
+                            </div>
+
+                            <!-- Product Grid -->
+                            <div id="pos-product-grid" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3 max-h-[520px] overflow-y-auto pr-1">
+                                <!-- Product cards injected by JS -->
+                            </div>
+                        </div>
+
+                        <!-- Right: Current Customer Invoice / Cart (5 cols) -->
+                        <div class="lg:col-span-5 bg-white rounded-2xl p-5 sm:p-6 border border-slate-200/80 shadow-md sticky top-24">
+                            <div class="flex items-center justify-between pb-4 border-b border-slate-100">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center">
+                                        <i data-lucide="shopping-bag" class="w-4 h-4"></i>
+                                    </div>
+                                    <div>
+                                        <h3 class="font-display font-bold text-base text-slate-900">Current Customer Bill</h3>
+                                        <p class="text-[11px] text-slate-500">Invoice #<span id="next-invoice-num">INV-1005</span></p>
+                                    </div>
+                                </div>
+                                <button onclick="clearCart()" class="text-xs font-medium text-rose-600 hover:underline">Clear</button>
+                            </div>
+
+                            <!-- Customer / Table Optional Input -->
+                            <div class="mt-4">
+                                <input type="text" id="pos-customer-name" placeholder="Customer Name or Hotel Table No. (Optional)" class="w-full px-3.5 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:border-indigo-500">
+                            </div>
+
+                            <!-- Cart Items List -->
+                            <div id="pos-cart-items" class="my-4 space-y-2.5 max-h-60 overflow-y-auto pr-1">
+                                <!-- Cart items injected by JS -->
+                            </div>
+
+                            <!-- Bill Summary & Controls -->
+                            <div class="pt-4 border-t border-slate-100 space-y-3">
+                                <div class="flex items-center justify-between text-xs text-slate-600">
+                                    <span>Subtotal</span>
+                                    <span id="cart-subtotal" class="font-semibold text-slate-800">₹0.00</span>
+                                </div>
+
+                                <div class="flex items-center justify-between text-xs text-slate-600">
+                                    <label class="inline-flex items-center gap-2 cursor-pointer">
+                                        <input type="checkbox" id="pos-gst-toggle" checked onchange="updateCartTotals()" class="rounded text-indigo-600 focus:ring-indigo-500">
+                                        <span>Include GST (5%)</span>
+                                    </label>
+                                    <span id="cart-gst" class="font-semibold text-slate-800">₹0.00</span>
+                                </div>
+
+                                <div class="flex items-center justify-between pt-2 border-t border-dashed border-slate-200">
+                                    <span class="font-display font-bold text-sm text-slate-900">Grand Total</span>
+                                    <span id="cart-grand-total" class="font-display font-extrabold text-xl text-indigo-600">₹0.00</span>
+                                </div>
+
+                                <!-- Payment Mode Selector -->
+                                <div>
+                                    <label class="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Payment Method</label>
+                                    <div class="grid grid-cols-3 gap-2">
+                                        <label class="cursor-pointer">
+                                            <input type="radio" name="paymentMode" value="UPI / QR" checked class="peer sr-only">
+                                            <div class="py-2 text-center text-xs font-semibold rounded-xl border border-slate-200 bg-slate-50 peer-checked:bg-emerald-50 peer-checked:border-emerald-600 peer-checked:text-emerald-700 transition">
+                                                UPI / QR
+                                            </div>
+                                        </label>
+                                        <label class="cursor-pointer">
+                                            <input type="radio" name="paymentMode" value="Cash" class="peer sr-only">
+                                            <div class="py-2 text-center text-xs font-semibold rounded-xl border border-slate-200 bg-slate-50 peer-checked:bg-emerald-50 peer-checked:border-emerald-600 peer-checked:text-emerald-700 transition">
+                                                Cash
+                                            </div>
+                                        </label>
+                                        <label id="payment-razorpay-option" class="cursor-pointer hidden">
+                                            <input type="radio" name="paymentMode" value="Online (Razorpay)" class="peer sr-only">
+                                            <div class="py-2 text-center text-xs font-semibold rounded-xl border border-slate-200 bg-slate-50 peer-checked:bg-indigo-50 peer-checked:border-indigo-600 peer-checked:text-indigo-700 transition">Pay Online</div>
+                                        </label>
+                                        <label class="cursor-pointer">
+                                            <input type="radio" name="paymentMode" value="Card" class="peer sr-only">
+                                            <div class="py-2 text-center text-xs font-semibold rounded-xl border border-slate-200 bg-slate-50 peer-checked:bg-emerald-50 peer-checked:border-emerald-600 peer-checked:text-emerald-700 transition">
+                                                Card
+                                            </div>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <button onclick="checkoutBill()" class="w-full py-3 px-4 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm rounded-xl shadow-lg shadow-emerald-600/20 transition flex items-center justify-center gap-2 mt-2">
+                                    <i data-lucide="check-circle-2" class="w-4 h-4"></i>
+                                    <span>Generate Bill & Deduct Stock</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ===========================================================
+                     TAB 3: DIGITAL INVENTORY MANAGEMENT
+                ============================================================ -->
+                <section id="view-inventory" class="hidden space-y-5 animate-slide-up">
+                    <div class="bg-white rounded-2xl p-5 sm:p-6 border border-slate-200/80 shadow-xs">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                            <div>
+                                <h3 class="font-display font-bold text-lg text-slate-900">Digital Stock & Catalog Registry</h3>
+                                <p class="text-xs text-slate-500">Monitor stock quantities, set low-stock alert thresholds, and add new items.</p>
+                            </div>
+                            <div class="flex flex-wrap items-center gap-2.5">
+                                <div class="relative">
+                                    <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-2.5"></i>
+                                    <input type="text" id="inv-search" oninput="renderInventoryTable()" placeholder="Filter inventory..." class="pl-9 pr-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:border-indigo-500">
+                                </div>
+                                <button onclick="openAddProductModal()" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold shadow-sm transition">
+                                    <i data-lucide="plus" class="w-4 h-4"></i>
+                                    <span>Add New Product</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse">
+                                <thead>
+                                    <tr class="bg-slate-50 border-y border-slate-200 text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                                        <th class="py-3 px-4">Item Name</th>
+                                        <th class="py-3 px-4">Category</th>
+                                        <th class="py-3 px-4">Unit Price</th>
+                                        <th class="py-3 px-4">Cost / Unit</th>
+                                        <th class="py-3 px-4">Current Stock</th>
+                                        <th class="py-3 px-4">Min. Alert Level</th>
+                                        <th class="py-3 px-4">Stock Status</th>
+                                        <th class="py-3 px-4 text-right">Quick Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="inventory-tbody" class="divide-y divide-slate-100 text-xs">
+                                    <!-- Inventory rows injected by JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ===========================================================
+                     TAB 4: FULL SALES & BILLS LOG
+                ============================================================ -->
+                <section id="view-transactions" class="hidden space-y-5 animate-slide-up">
+                    <div class="bg-white rounded-2xl p-5 sm:p-6 border border-slate-200/80 shadow-xs">
+                        <div class="flex items-center justify-between mb-5">
+                            <div>
+                                <h3 class="font-display font-bold text-lg text-slate-900">Complete Sales & Billing History</h3>
+                                <p class="text-xs text-slate-500">Audit trail of all generated receipts and payment modes</p>
+                            </div>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse">
+                                <thead>
+                                    <tr class="bg-slate-50 border-y border-slate-200 text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                                        <th class="py-3 px-4">Invoice ID</th>
+                                        <th class="py-3 px-4">Date & Time</th>
+                                        <th class="py-3 px-4">Customer / Table</th>
+                                        <th class="py-3 px-4">Items Purchased</th>
+                                        <th class="py-3 px-4">Payment Mode</th>
+                                        <th class="py-3 px-4 text-right">Total Paid</th>
+                                        <th class="py-3 px-4 text-right">Receipt</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="all-bills-tbody" class="divide-y divide-slate-100 text-xs">
+                                    <!-- All bills injected by JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+            </main>
+        </div>
+    </div>
+
+    <!-- =====================================================================
+         3. MODALS (ADD PRODUCT MODAL & CUSTOMER RECEIPT PREVIEW MODAL)
+    ====================================================================== -->
+    
+    <!-- Add New Product Modal -->
+    <div id="add-product-modal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 animate-slide-up">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
+                <h3 class="font-display font-bold text-base text-slate-900">Add Item to Digital Inventory</h3>
+                <button onclick="closeAddProductModal()" class="text-slate-400 hover:text-slate-700">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            <form onsubmit="handleAddProduct(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Item / Dish Name *</label>
+                    <input type="text" id="new-prod-name" required placeholder="e.g., Paneer Butter Masala / Aashirvaad Atta 5kg" class="w-full px-3.5 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:border-indigo-500">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Category *</label>
+                        <select id="new-prod-category" class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:border-indigo-500">
+                            <option value="Groceries">Groceries</option>
+                            <option value="Hotel Menu">Hotel Menu</option>
+                            <option value="Beverages">Beverages</option>
+                            <option value="Dairy & Bakery">Dairy & Bakery</option>
+                            <option value="Snacks">Snacks</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Selling Price (₹) *</label>
+                        <input type="number" id="new-prod-price" required min="1" placeholder="120" class="w-full px-3.5 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:border-indigo-500">
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Purchase / Cost Price (INR, optional)</label>
+                    <input type="number" id="new-prod-cost" step="0.01" min="0" placeholder="Actual unit cost" class="w-full px-3.5 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:border-indigo-500">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Opening Stock Qty *</label>
+                        <input type="number" id="new-prod-stock" required min="0" placeholder="25" class="w-full px-3.5 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:border-indigo-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Low-Stock Alert At *</label>
+                        <input type="number" id="new-prod-min" required min="1" value="8" class="w-full px-3.5 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:border-indigo-500">
+                    </div>
+                </div>
+                <div class="pt-2 flex items-center justify-end gap-2">
+                    <button type="button" onclick="closeAddProductModal()" class="px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-xl">Cancel</button>
+                    <button type="submit" class="px-5 py-2 text-xs font-semibold bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl shadow-sm">Save Product</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Customer Bill / Receipt Modal -->
+    <div id="receipt-modal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl border border-slate-200 animate-slide-up">
+            <div class="text-center border-b border-dashed border-slate-300 pb-4">
+                <div class="w-10 h-10 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto mb-2">
+                    <i data-lucide="check" class="w-5 h-5"></i>
+                </div>
+                <h4 id="rec-biz-name" class="font-display font-bold text-base text-slate-900">Sri Balaji Supermart</h4>
+                <p id="rec-biz-sub" class="text-[11px] text-slate-500">Tax Invoice • Digital POS Receipt</p>
+            </div>
+
+            <div class="py-3 border-b border-dashed border-slate-300 text-xs space-y-1 text-slate-600">
+                <div class="flex justify-between"><span>Invoice No:</span><span id="rec-id" class="font-bold text-slate-800">INV-1005</span></div>
+                <div class="flex justify-between"><span>Date:</span><span id="rec-date">12 Nov 2026</span></div>
+                <div class="flex justify-between"><span>Customer:</span><span id="rec-customer">Walk-in Customer</span></div>
+                <div class="flex justify-between"><span>Payment Mode:</span><span id="rec-payment" class="font-semibold text-emerald-700">UPI / QR</span></div>
+            </div>
+
+            <div id="rec-items-list" class="py-3 border-b border-dashed border-slate-300 space-y-1.5 text-xs max-h-48 overflow-y-auto">
+                <!-- Receipt line items -->
+            </div>
+
+            <div class="pt-3 space-y-1 text-xs">
+                <div class="flex justify-between text-slate-500"><span>Subtotal:</span><span id="rec-subtotal">₹0</span></div>
+                <div class="flex justify-between text-slate-500"><span>GST (5%):</span><span id="rec-gst">₹0</span></div>
+                <div class="flex justify-between font-display font-extrabold text-base text-slate-900 pt-1">
+                    <span>Total Paid:</span><span id="rec-total" class="text-indigo-600">₹0</span>
+                </div>
+            </div>
+
+            <div class="mt-5 flex gap-2">
+                <button onclick="printReceiptToast()" class="flex-1 py-2.5 px-3 bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-semibold rounded-xl flex items-center justify-center gap-1.5 transition">
+                    <i data-lucide="printer" class="w-4 h-4"></i>
+                    <span>Print Receipt</span>
+                </button>
+                <button onclick="closeReceiptModal()" class="flex-1 py-2.5 px-3 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-xl transition">
+                    Done
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- =====================================================================
+         4. BUILT-IN AI CHATBOT WIDGET (WORKER ONBOARDING & OWNER HELP)
+    ====================================================================== -->
+    <div id="ai-chatbot-wrapper" class="fixed bottom-5 right-5 z-50 flex flex-col items-end">
+        
+        <!-- Expanded Chat Window -->
+        <div id="ai-chat-window" class="hidden mb-3 w-[340px] sm:w-[390px] bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col animate-slide-up" style="height: 500px; max-height: 78vh;">
+            
+            <!-- Chat Header -->
+            <div class="bg-gradient-to-r from-indigo-600 to-indigo-800 text-white p-4 flex items-center justify-between">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-9 h-9 rounded-xl bg-white/15 backdrop-blur-xs flex items-center justify-center">
+                        <i data-lucide="bot" class="w-5 h-5 text-amber-300"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-display font-bold text-sm leading-tight">VyaparAI Staff Assistant</h4>
+                        <p class="text-[11px] text-indigo-200 flex items-center gap-1">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                            Worker Training & Store Help
+                        </p>
+                    </div>
+                </div>
+                <button onclick="toggleChatbot(false)" class="p-1.5 rounded-lg hover:bg-white/15 text-indigo-100 transition">
+                    <i data-lucide="chevron-down" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <!-- Messages Stream -->
+            <div id="ai-chat-messages" class="flex-1 p-4 overflow-y-auto space-y-3 bg-slate-50 text-xs">
+                <!-- Initial Welcome Message -->
+                <div class="flex items-start gap-2.5">
+                    <div class="w-7 h-7 rounded-lg bg-indigo-600 text-white flex items-center justify-center shrink-0 mt-0.5">
+                        <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+                    </div>
+                    <div class="bg-white border border-slate-200/80 rounded-2xl rounded-tl-none p-3 text-slate-700 shadow-2xs leading-relaxed">
+                        Namaste! 👋 I am your <strong>VyaparAI Assistant</strong>. Whether you are a new counter worker learning the system or the business owner checking reports, ask me anything!<br><br>
+                        Try tapping a quick question below or type your own.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Action Prompt Chips -->
+            <div class="px-3 py-2 bg-white border-t border-slate-100 flex items-center gap-1.5 overflow-x-auto">
+                <button onclick="sendQuickPrompt('How do I create a customer bill?')" class="shrink-0 px-2.5 py-1 rounded-full bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-[11px] font-medium transition">
+                    🧾 How to make a bill?
+                </button>
+                <button onclick="sendQuickPrompt('How do I restock low-stock items?')" class="shrink-0 px-2.5 py-1 rounded-full bg-amber-50 hover:bg-amber-100 text-amber-800 text-[11px] font-medium transition">
+                    📦 Restock low items
+                </button>
+                <button onclick="sendQuickPrompt('Summarize my store sales & low stock right now')" class="shrink-0 px-2.5 py-1 rounded-full bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-[11px] font-medium transition">
+                    📊 Live store summary
+                </button>
+            </div>
+
+            <!-- Input Form -->
+            <form onsubmit="handleChatSubmit(event)" class="p-3 bg-white border-t border-slate-200 flex items-center gap-2">
+                <input type="text" id="ai-chat-input" placeholder="Ask how to use dashboard, billing, stock..." class="flex-1 px-3.5 py-2 text-xs bg-slate-100 border border-transparent rounded-xl focus:bg-white focus:border-indigo-500 focus:outline-none">
+                <button type="submit" id="ai-send-btn" class="p-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm transition shrink-0">
+                    <i data-lucide="send" class="w-4 h-4"></i>
+                </button>
+            </form>
+        </div>
+
+        <!-- Floating Launcher Button -->
+        <button onclick="toggleChatbot()" id="ai-launcher-btn" class="group flex items-center gap-2.5 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-3 rounded-full shadow-xl shadow-indigo-600/30 transition-all hover:scale-105">
+            <div class="relative">
+                <i data-lucide="bot" class="w-5 h-5"></i>
+                <span class="absolute -top-1 -right-1 w-2.5 h-2.5 bg-emerald-400 border-2 border-indigo-600 rounded-full"></span>
+            </div>
+            <span class="text-xs font-bold tracking-wide">AI Worker Help</span>
+        </button>
+    </div>
+
+    <!-- =====================================================================
+         5. JAVASCRIPT APPLICATION LOGIC & GEMINI AI INTEGRATION
+    ====================================================================== -->
+    <script>
+        // -------------------------------------------------------------------
+        // STATE MANAGEMENT & INITIAL SAMPLE DATA (INDIAN SMALL BUSINESS)
+        // -------------------------------------------------------------------
+        let authMode = 'signup'; // 'signup' or 'login'
+        let currentOwner = null;
+        let selectedPosCategory = 'All';
+        let cart = [];
+        let invoiceCounter = 1005;
+
+        // Pre-loaded realistic Indian Supermart / General Store / Hotel catalog
+        let inventory = [
+            { id: 1, name: 'India Gate Basmati Rice (5kg)', category: 'Groceries', price: 540, stock: 18, minStock: 8, soldCount: 42 },
+            { id: 2, name: 'Freedom Sunflower Oil (1L)', category: 'Groceries', price: 135, stock: 5, minStock: 10, soldCount: 68 },
+            { id: 3, name: 'Toor Dal Premium (1kg)', category: 'Groceries', price: 165, stock: 22, minStock: 8, soldCount: 35 },
+            { id: 4, name: 'Special Masala Dosa', category: 'Hotel Menu', price: 85, stock: 40, minStock: 10, soldCount: 95 },
+            { id: 5, name: 'South Indian Filter Coffee', category: 'Beverages', price: 35, stock: 6, minStock: 15, soldCount: 120 },
+            { id: 6, name: 'Amul Taaza Milk (500ml)', category: 'Dairy & Bakery', price: 28, stock: 4, minStock: 12, soldCount: 84 },
+            { id: 7, name: 'Parle-G Gold Biscuits Pack', category: 'Snacks', price: 20, stock: 35, minStock: 10, soldCount: 60 },
+            { id: 8, name: 'Veg Dum Biryani (Full)', category: 'Hotel Menu', price: 180, stock: 14, minStock: 6, soldCount: 51 },
+            { id: 9, name: 'Tata Salt Iodized (1kg)', category: 'Groceries', price: 28, stock: 3, minStock: 10, soldCount: 49 }
+        ];
+
+        // Sample historical bills for today
+        let bills = [
+            {
+                id: 'INV-1004',
+                time: 'Today, 07:45 PM',
+                customer: 'Table #4 (Hotel)',
+                items: [{ name: 'Special Masala Dosa', qty: 2, price: 85 }, { name: 'South Indian Filter Coffee', qty: 2, price: 35 }],
+                subtotal: 240,
+                gst: 12,
+                total: 252,
+                payment: 'UPI / QR'
+            },
+            {
+                id: 'INV-1003',
+                time: 'Today, 06:15 PM',
+                customer: 'Ramesh Sharma',
+                items: [{ name: 'India Gate Basmati Rice (5kg)', qty: 1, price: 540 }, { name: 'Toor Dal Premium (1kg)', qty: 2, price: 165 }],
+                subtotal: 870,
+                gst: 43.5,
+                total: 913.5,
+                payment: 'Card'
+            },
+            {
+                id: 'INV-1002',
+                time: 'Today, 04:30 PM',
+                customer: 'Walk-in Customer',
+                items: [{ name: 'Freedom Sunflower Oil (1L)', qty: 2, price: 135 }, { name: 'Parle-G Gold Biscuits Pack', qty: 3, price: 20 }],
+                subtotal: 330,
+                gst: 16.5,
+                total: 346.5,
+                payment: 'Cash'
+            },
+            {
+                id: 'INV-1001',
+                time: 'Today, 01:20 PM',
+                customer: 'Ananya Verma',
+                items: [{ name: 'Veg Dum Biryani (Full)', qty: 3, price: 180 }],
+                subtotal: 540,
+                gst: 27,
+                total: 567,
+                payment: 'UPI / QR'
+            }
+        ];
+
+        // Weekly sales baseline (Mon - Sun, where index 6 is Today)
+        const weeklyDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Today'];
+        const pastSixDaysRevenue = [5400, 6200, 5850, 7100, 8400, 9200];
+
+        // -------------------------------------------------------------------
+        // INITIALIZATION
+        // -------------------------------------------------------------------
+        window.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+        });
+
+        // -------------------------------------------------------------------
+        // 1. AUTHENTICATION HANDLERS (LOGIN / SIGN UP / DEMO LOGIN)
+        // -------------------------------------------------------------------
+        function switchAuthMode(mode) {
+            authMode = mode;
+            const tabSignup = document.getElementById('tab-signup');
+            const tabLogin = document.getElementById('tab-login');
+            const signupFields = document.getElementById('signup-fields');
+            const heading = document.getElementById('auth-heading');
+            const subtext = document.getElementById('auth-subtext');
+            const passLabel = document.getElementById('password-label');
+            const submitBtn = document.getElementById('auth-submit-btn');
+            const errorBox = document.getElementById('auth-error');
+
+            errorBox.classList.add('hidden');
+
+            if (mode === 'signup') {
+                tabSignup.className = 'py-2.5 text-sm font-semibold rounded-lg bg-white text-indigo-600 shadow-sm transition-all';
+                tabLogin.className = 'py-2.5 text-sm font-semibold rounded-lg text-slate-600 hover:text-slate-900 transition-all';
+                signupFields.classList.remove('hidden');
+                heading.textContent = 'Register Your Business';
+                subtext.textContent = 'Create an owner profile with email, mobile number & password to enter the dashboard.';
+                passLabel.textContent = 'Create Owner Password *';
+                submitBtn.innerHTML = '<span>Create Account & Enter Dashboard</span><i data-lucide="arrow-right" class="w-4 h-4"></i>';
+            } else {
+                tabLogin.className = 'py-2.5 text-sm font-semibold rounded-lg bg-white text-indigo-600 shadow-sm transition-all';
+                tabSignup.className = 'py-2.5 text-sm font-semibold rounded-lg text-slate-600 hover:text-slate-900 transition-all';
+                signupFields.classList.add('hidden');
+                heading.textContent = 'Owner Portal Login';
+                subtext.textContent = 'Enter your registered Owner Email ID, Mobile Number & Password.';
+                passLabel.textContent = 'Enter Password *';
+                submitBtn.innerHTML = '<span>Login to Dashboard</span><i data-lucide="arrow-right" class="w-4 h-4"></i>';
+            }
+            lucide.createIcons();
+        }
+
+        function togglePasswordVisibility() {
+            const passInput = document.getElementById('input-password');
+            passInput.type = passInput.type === 'password' ? 'text' : 'password';
+        }
+
+        function handleAuthSubmit(e) {
+            e.preventDefault();
+            const email = document.getElementById('input-email').value.trim();
+            const mobile = document.getElementById('input-mobile').value.trim();
+            const password = document.getElementById('input-password').value.trim();
+            const bizNameInput = document.getElementById('input-biz-name').value.trim();
+            const bizTypeEl = document.querySelector('input[name="bizType"]:checked');
+            const errorBox = document.getElementById('auth-error');
+            const errorText = document.getElementById('auth-error-text');
+
+            if (authMode === 'signup' && !bizNameInput) {
+                errorText.textContent = 'Please enter your Business / Shop Name.';
+                errorBox.classList.remove('hidden');
+                return;
+            }
+            if (!email || mobile.length !== 10 || !password) {
+                errorText.textContent = 'Please provide a valid Email ID, 10-digit Mobile Number, and Password.';
+                errorBox.classList.remove('hidden');
+                return;
+            }
+
+            errorBox.classList.add('hidden');
+            currentOwner = {
+                businessName: authMode === 'signup' ? bizNameInput : 'Sri Lakshmi Supermart & Hotel',
+                businessType: bizTypeEl ? bizTypeEl.value : 'Supermart',
+                email: email,
+                mobile: '+91 ' + mobile
+            };
+
+            enterDashboard();
+        }
+
+        function quickDemoLogin() {
+            currentOwner = {
+                businessName: 'Sri Lakshmi Supermart & Tiffins',
+                businessType: 'Supermart & Hotel',
+                email: 'owner@srilakshmistore.in',
+                mobile: '+91 98765 43210'
+            };
+            enterDashboard();
+            showToast('Logged in with Demo Store Profile!', 'success');
+        }
+
+        function enterDashboard() {
+            document.getElementById('auth-screen').classList.add('hidden');
+            document.getElementById('dashboard-screen').classList.remove('hidden');
+
+            // Populate Owner & Store Metadata in UI
+            document.getElementById('sidebar-biz-name').textContent = currentOwner.businessName;
+            document.getElementById('sidebar-biz-type').textContent = currentOwner.businessType;
+            document.getElementById('sidebar-owner-contact').textContent = currentOwner.mobile;
+            document.getElementById('header-owner-email').textContent = currentOwner.email;
+            document.getElementById('rec-biz-name').textContent = currentOwner.businessName;
+
+            refreshAllViews();
+            switchTab('overview');
+        }
+
+        function logoutUser() {
+            currentOwner = null;
+            document.getElementById('dashboard-screen').classList.add('hidden');
+            document.getElementById('auth-screen').classList.remove('hidden');
+            showToast('Owner session closed safely.', 'info');
+        }
+
+        // -------------------------------------------------------------------
+        // 2. NAVIGATION & VIEW SWITCHING
+        // -------------------------------------------------------------------
+        function switchTab(tabName) {
+            const views = ['overview', 'billing', 'inventory', 'transactions'];
+            const titles = {
+                overview: ['Dashboard Overview & Reports', 'Real-time sales performance, inventory health & low-stock alerts'],
+                billing: ['POS Counter & Quick Billing', 'Select items, apply GST, choose payment mode & auto-deduct stock'],
+                inventory: ['Digital Inventory Management', 'Track stock quantities, restock low items & add new products'],
+                transactions: ['Sales & Billing Audit Log', 'Complete history of generated customer invoices']
+            };
+
+            views.forEach(v => {
+                const viewEl = document.getElementById(`view-${v}`);
+                const navEl = document.getElementById(`nav-${v}`);
+                if (v === tabName) {
+                    viewEl.classList.remove('hidden');
+                    navEl.className = 'nav-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-medium bg-indigo-600 text-white shadow-md shadow-indigo-600/20 transition';
+                } else {
+                    viewEl.classList.add('hidden');
+                    navEl.className = 'nav-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition';
+                }
+            });
+
+            document.getElementById('page-title').textContent = titles[tabName][0];
+            document.getElementById('header-subtitle').textContent = titles[tabName][1];
+
+            // Close mobile sidebar if open
+            const sidebar = document.getElementById('sidebar');
+            if (!sidebar.classList.contains('-translate-x-full') && window.innerWidth < 1024) {
+                toggleMobileSidebar();
+            }
+
+            refreshAllViews();
+        }
+
+        function toggleMobileSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const backdrop = document.getElementById('sidebar-backdrop');
+            sidebar.classList.toggle('-translate-x-full');
+            backdrop.classList.toggle('hidden');
+        }
+
+        function refreshAllViews() {
+            updateOverviewKPIs();
+            renderSalesChart();
+            renderLowStockPanel();
+            renderTopSelling();
+            renderBillsTables();
+            renderPOSCategories();
+            renderPOSProducts();
+            renderCart();
+            renderInventoryTable();
+            lucide.createIcons();
+        }
+
+        // -------------------------------------------------------------------
+        // 3. DASHBOARD REPORTS, ANALYTICS & LOW-STOCK ALERTS
+        // -------------------------------------------------------------------
+        function formatINR(amount) {
+            return '₹' + Number(amount).toLocaleString('en-IN', { maximumFractionDigits: 2 });
+        }
+
+        function getTodayTotalSales() {
+            return bills.reduce((sum, b) => sum + b.total, 0);
+        }
+
+        function updateOverviewKPIs() {
+            const todaySales = getTodayTotalSales();
+            const totalBills = bills.length;
+            const avgBill = totalBills > 0 ? (todaySales / totalBills) : 0;
+            const lowStockItems = inventory.filter(item => item.stock <= item.minStock);
+            const netProfit = todaySales * 0.24;
+
+            document.getElementById('kpi-today-sales').textContent = formatINR(todaySales);
+            document.getElementById('kpi-total-bills').textContent = totalBills;
+            document.getElementById('kpi-avg-bill').textContent = formatINR(Math.round(avgBill));
+            document.getElementById('kpi-low-stock').textContent = lowStockItems.length;
+            document.getElementById('kpi-total-skus').textContent = inventory.length;
+            document.getElementById('kpi-net-profit').textContent = formatINR(Math.round(netProfit));
+            document.getElementById('nav-low-stock-badge').textContent = lowStockItems.length;
+        }
+
+        function renderSalesChart() {
+            const todaySales = getTodayTotalSales();
+            const allValues = [...pastSixDaysRevenue, todaySales];
+            const maxVal = Math.max(...allValues, 10000);
+            const weeklySum = allValues.reduce((a, b) => a + b, 0);
+
+            document.getElementById('weekly-total-label').textContent = formatINR(Math.round(weeklySum));
+
+            const chartContainer = document.getElementById('sales-bar-chart');
+            const labelsContainer = document.getElementById('sales-bar-labels');
+
+            chartContainer.innerHTML = allValues.map((val, idx) => {
+                const heightPct = Math.max(12, Math.round((val / maxVal) * 100));
+                const isToday = idx === allValues.length - 1;
+                return `
+                    <div class="flex-1 flex flex-col items-center justify-end h-full group relative">
+                        <span class="text-[10px] font-bold ${isToday ? 'text-indigo-600' : 'text-slate-500'} mb-1.5 opacity-90 group-hover:scale-105 transition">
+                            ₹${(val / 1000).toFixed(1)}k
+                        </span>
+                        <div style="height: ${heightPct}%" class="w-full max-w-[38px] rounded-t-xl transition-all duration-500 ${isToday ? 'bg-gradient-to-t from-indigo-600 to-indigo-400 shadow-md shadow-indigo-500/25' : 'bg-slate-200 group-hover:bg-indigo-200'}"></div>
+                    </div>
+                `;
+            }).join('');
+
+            labelsContainer.innerHTML = weeklyDays.map((day, idx) => {
+                const isToday = idx === weeklyDays.length - 1;
+                return `<span class="flex-1 text-center ${isToday ? 'font-bold text-indigo-600' : ''}">${day}</span>`;
+            }).join('');
+        }
+
+        function renderLowStockPanel() {
+            const container = document.getElementById('low-stock-list');
+            const lowItems = inventory.filter(i => i.stock <= i.minStock);
+
+            if (lowItems.length === 0) {
+                container.innerHTML = `
+                    <div class="p-6 text-center rounded-xl bg-emerald-50/70 border border-emerald-200">
+                        <p class="text-xs font-semibold text-emerald-800">All Stock Levels Healthy!</p>
+                        <p class="text-[11px] text-emerald-600 mt-1">Every item is above its minimum alert threshold.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = lowItems.map(item => `
+                <div class="p-3 rounded-xl bg-amber-50/70 border border-amber-200/80 flex items-center justify-between gap-3">
+                    <div class="min-w-0">
+                        <div class="flex items-center gap-1.5">
+                            <span class="px-1.5 py-0.5 text-[10px] font-bold rounded ${item.stock === 0 ? 'bg-rose-100 text-rose-700' : 'bg-amber-200/80 text-amber-900'}">
+                                ${item.stock === 0 ? 'OUT OF STOCK' : item.stock + ' left'}
+                            </span>
+                            <span class="text-[10px] text-slate-500">Min: ${item.minStock}</span>
+                        </div>
+                        <p class="text-xs font-bold text-slate-800 truncate mt-1">${escapeHtml(item.name)}</p>
+                    </div>
+                    <button onclick="quickRestock(${item.id}, 10)" class="shrink-0 px-2.5 py-1.5 rounded-lg bg-white hover:bg-indigo-600 text-indigo-700 hover:text-white border border-indigo-200 text-[11px] font-bold shadow-2xs transition">
+                        +10 Restock
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function quickRestock(itemId, qty) {
+            const product = inventory.find(p => p.id === itemId);
+            if (!product) return;
+            product.stock += qty;
+            refreshAllViews();
+            showToast(`Restocked +${qty} units of "${product.name}"`, 'success');
+        }
+
+        function renderTopSelling() {
+            const container = document.getElementById('top-selling-list');
+            const sorted = [...inventory].sort((a, b) => b.soldCount - a.soldCount).slice(0, 4);
+            const maxSold = sorted[0]?.soldCount || 1;
+
+            container.innerHTML = sorted.map(item => {
+                const pct = Math.round((item.soldCount / maxSold) * 100);
+                return `
+                    <div>
+                        <div class="flex justify-between text-xs mb-1">
+                            <span class="font-semibold text-slate-800 truncate pr-2">${escapeHtml(item.name)}</span>
+                            <span class="text-slate-500 shrink-0">${item.soldCount} sold • <strong class="text-slate-700">${formatINR(item.price)}</strong></span>
+                        </div>
+                        <div class="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
+                            <div style="width: ${pct}%" class="h-full bg-indigo-600 rounded-full"></div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderBillsTables() {
+            const recentBody = document.getElementById('recent-bills-tbody');
+            const allBody = document.getElementById('all-bills-tbody');
+
+            recentBody.innerHTML = bills.slice(0, 5).map(b => `
+                <tr class="hover:bg-slate-50/80 transition">
+                    <td class="py-2.5 px-2 font-bold text-indigo-600">${b.id}</td>
+                    <td class="py-2.5 px-2 font-medium text-slate-700">${escapeHtml(b.customer)}</td>
+                    <td class="py-2.5 px-2 text-slate-500">${b.items.reduce((s, i) => s + i.qty, 0)} items</td>
+                    <td class="py-2.5 px-2"><span class="px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 text-[10px] font-semibold">${escapeHtml(b.payment)}</span></td>
+                    <td class="py-2.5 px-2 text-right font-bold text-slate-900">${formatINR(b.total)}</td>
+                </tr>
+            `).join('');
+
+            allBody.innerHTML = bills.map(b => `
+                <tr class="hover:bg-slate-50 transition">
+                    <td class="py-3 px-4 font-bold text-indigo-600">${b.id}</td>
+                    <td class="py-3 px-4 text-slate-500">${b.time}</td>
+                    <td class="py-3 px-4 font-semibold text-slate-800">${escapeHtml(b.customer)}</td>
+                    <td class="py-3 px-4 text-slate-600">${b.items.map(i => `${escapeHtml(i.name)} (x${i.qty})`).join(', ')}</td>
+                    <td class="py-3 px-4"><span class="px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-700 text-[11px] font-semibold">${escapeHtml(b.payment)}</span></td>
+                    <td class="py-3 px-4 text-right font-bold text-slate-900">${formatINR(b.total)}</td>
+                    <td class="py-3 px-4 text-right">
+                        <button onclick="viewSavedReceipt('${b.id}')" class="px-2.5 py-1 rounded-lg border border-slate-200 hover:bg-indigo-50 hover:text-indigo-600 font-semibold text-[11px] transition">
+                            View Bill
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // -------------------------------------------------------------------
+        // 4. POS COUNTER / BILLING LOGIC
+        // -------------------------------------------------------------------
+        function renderPOSCategories() {
+            const categories = ['All', ...new Set(inventory.map(i => i.category))];
+            const container = document.getElementById('pos-category-filters');
+            container.innerHTML = categories.map(cat => {
+                const active = cat === selectedPosCategory;
+                return `
+                    <button onclick="selectPosCategory(decodeURIComponent('${encodeURIComponent(cat).replace(/'/g, '%27')}'))" class="shrink-0 px-3 py-1.5 rounded-xl text-xs font-semibold transition ${active ? 'bg-indigo-600 text-white shadow-xs' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}">
+                        ${escapeHtml(cat)}
+                    </button>
+                `;
+            }).join('');
+        }
+
+        function selectPosCategory(cat) {
+            selectedPosCategory = cat;
+            renderPOSCategories();
+            renderPOSProducts();
+        }
+
+        function renderPOSProducts() {
+            const query = document.getElementById('pos-search').value.toLowerCase().trim();
+            const grid = document.getElementById('pos-product-grid');
+
+            const filtered = inventory.filter(item => {
+                const matchesCat = selectedPosCategory === 'All' || item.category === selectedPosCategory;
+                const matchesSearch = item.name.toLowerCase().includes(query);
+                return matchesCat && matchesSearch;
+            });
+
+            grid.innerHTML = filtered.map(item => {
+                const outOfStock = item.stock <= 0;
+                const isLow = item.stock > 0 && item.stock <= item.minStock;
+                return `
+                    <button onclick="addToCart(${item.id})" ${outOfStock ? 'disabled' : ''} class="text-left p-3.5 rounded-xl border transition flex flex-col justify-between ${outOfStock ? 'bg-slate-50 border-slate-200 opacity-55 cursor-not-allowed' : 'bg-white border-slate-200 hover:border-indigo-500 hover:shadow-md active:scale-[0.98]'}">
+                        <div>
+                            <div class="flex items-center justify-between gap-1 mb-1.5">
+                                <span class="text-[10px] font-semibold text-slate-400 uppercase">${escapeHtml(item.category)}</span>
+                                <span class="px-1.5 py-0.5 text-[10px] font-bold rounded ${outOfStock ? 'bg-rose-100 text-rose-700' : isLow ? 'bg-amber-100 text-amber-800' : 'bg-emerald-50 text-emerald-700'}">
+                                    ${outOfStock ? 'Out of stock' : item.stock + ' in stock'}
+                                </span>
+                            </div>
+                            <h4 class="text-xs font-bold text-slate-800 line-clamp-2">${escapeHtml(item.name)}</h4>
+                        </div>
+                        <div class="mt-3 pt-2 border-t border-slate-100 flex items-center justify-between">
+                            <span class="font-display font-extrabold text-sm text-indigo-600">${formatINR(item.price)}</span>
+                            <span class="w-6 h-6 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center text-xs font-bold">+</span>
+                        </div>
+                    </button>
+                `;
+            }).join('');
+        }
+
+        function addToCart(itemId) {
+            const product = inventory.find(p => p.id === itemId);
+            if (!product || product.stock <= 0) return;
+
+            const existing = cart.find(c => c.id === itemId);
+            if (existing) {
+                if (existing.qty >= product.stock) {
+                    showToast(`Only ${product.stock} units available in stock!`, 'warning');
+                    return;
+                }
+                existing.qty += 1;
+            } else {
+                cart.push({ id: product.id, name: product.name, price: product.price, qty: 1 });
+            }
+            renderCart();
+        }
+
+        function updateCartQty(itemId, delta) {
+            const idx = cart.findIndex(c => c.id === itemId);
+            if (idx === -1) return;
+            const product = inventory.find(p => p.id === itemId);
+
+            const newQty = cart[idx].qty + delta;
+            if (newQty <= 0) {
+                cart.splice(idx, 1);
+            } else if (product && newQty > product.stock) {
+                showToast(`Cannot exceed available stock (${product.stock})`, 'warning');
+                return;
+            } else {
+                cart[idx].qty = newQty;
+            }
+            renderCart();
+        }
+
+        function clearCart() {
+            cart = [];
+            renderCart();
+        }
+
+        function renderCart() {
+            const container = document.getElementById('pos-cart-items');
+            document.getElementById('next-invoice-num').textContent = `INV-${invoiceCounter}`;
+
+            if (cart.length === 0) {
+                container.innerHTML = `
+                    <div class="py-8 text-center border border-dashed border-slate-200 rounded-xl bg-slate-50/50">
+                        <p class="text-xs font-medium text-slate-500">No items added to bill yet</p>
+                        <p class="text-[11px] text-slate-400 mt-0.5">Click products on the left to start billing</p>
+                    </div>
+                `;
+            } else {
+                container.innerHTML = cart.map(item => `
+                    <div class="flex items-center justify-between gap-2 p-2.5 rounded-xl bg-slate-50 border border-slate-200/70">
+                        <div class="min-w-0 flex-1">
+                            <p class="text-xs font-bold text-slate-800 truncate">${escapeHtml(item.name)}</p>
+                            <p class="text-[11px] text-slate-500">${formatINR(item.price)} × ${item.qty}</p>
+                        </div>
+                        <div class="flex items-center gap-1.5">
+                            <button onclick="updateCartQty(${item.id}, -1)" class="w-6 h-6 rounded-lg bg-white border border-slate-200 text-slate-700 font-bold text-xs hover:bg-slate-100">-</button>
+                            <span class="w-5 text-center text-xs font-bold">${item.qty}</span>
+                            <button onclick="updateCartQty(${item.id}, 1)" class="w-6 h-6 rounded-lg bg-white border border-slate-200 text-slate-700 font-bold text-xs hover:bg-slate-100">+</button>
+                        </div>
+                        <div class="w-16 text-right text-xs font-extrabold text-slate-900">
+                            ${formatINR(item.price * item.qty)}
+                        </div>
+                    </div>
+                `).join('');
+            }
+            updateCartTotals();
+        }
+
+        function updateCartTotals() {
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+            const includeGst = document.getElementById('pos-gst-toggle').checked;
+            const gst = includeGst ? subtotal * 0.05 : 0;
+            const total = subtotal + gst;
+
+            document.getElementById('cart-subtotal').textContent = formatINR(subtotal);
+            document.getElementById('cart-gst').textContent = formatINR(gst);
+            document.getElementById('cart-grand-total').textContent = formatINR(total);
+        }
+
+        function checkoutBill() {
+            if (cart.length === 0) {
+                showToast('Please add at least one item to generate a bill.', 'warning');
+                return;
+            }
+
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+            const includeGst = document.getElementById('pos-gst-toggle').checked;
+            const gst = includeGst ? subtotal * 0.05 : 0;
+            const total = subtotal + gst;
+            const customerName = document.getElementById('pos-customer-name').value.trim() || 'Walk-in Customer';
+            const paymentMode = document.querySelector('input[name="paymentMode"]:checked')?.value || 'UPI / QR';
+
+            // Deduct stock from inventory & increment sold count
+            cart.forEach(cartItem => {
+                const invItem = inventory.find(i => i.id === cartItem.id);
+                if (invItem) {
+                    invItem.stock = Math.max(0, invItem.stock - cartItem.qty);
+                    invItem.soldCount += cartItem.qty;
+                }
+            });
+
+            const now = new Date();
+            const timeString = 'Today, ' + now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+            const newBill = {
+                id: `INV-${invoiceCounter++}`,
+                time: timeString,
+                customer: customerName,
+                items: JSON.parse(JSON.stringify(cart)),
+                subtotal,
+                gst,
+                total,
+                payment: paymentMode
+            };
+
+            bills.unshift(newBill);
+            cart = [];
+            document.getElementById('pos-customer-name').value = '';
+
+            refreshAllViews();
+            openReceiptModal(newBill);
+            showToast(`Bill ${newBill.id} generated & inventory updated!`, 'success');
+        }
+
+        function viewSavedReceipt(billId) {
+            const bill = bills.find(b => b.id === billId);
+            if (bill) openReceiptModal(bill);
+        }
+
+        function openReceiptModal(bill) {
+            document.getElementById('rec-id').textContent = bill.id;
+            document.getElementById('rec-date').textContent = bill.time;
+            document.getElementById('rec-customer').textContent = bill.customer;
+            document.getElementById('rec-payment').textContent = bill.payment + (bill.paymentStatus === 'pending' ? ' (Pending)' : bill.paymentStatus === 'paid' ? ' (Verified)' : ' (Recorded)');
+            document.getElementById('rec-subtotal').textContent = formatINR(bill.subtotal);
+            document.getElementById('rec-gst').textContent = formatINR(bill.gst);
+            document.getElementById('rec-total').textContent = formatINR(bill.total);
+
+            document.getElementById('rec-items-list').innerHTML = bill.items.map(i => `
+                <div class="flex justify-between">
+                    <span class="text-slate-700">${escapeHtml(i.name)} <span class="text-slate-400">×${i.qty}</span></span>
+                    <span class="font-semibold text-slate-900">${formatINR(i.price * i.qty)}</span>
+                </div>
+            `).join('');
+
+            document.getElementById('receipt-modal').classList.remove('hidden');
+            lucide.createIcons();
+        }
+
+        function closeReceiptModal() {
+            document.getElementById('receipt-modal').classList.add('hidden');
+        }
+
+        function printReceiptToast() {
+            showToast('Sending digital invoice to thermal printer...', 'info');
+        }
+
+        // -------------------------------------------------------------------
+        // 5. INVENTORY TABLE & ADD PRODUCT MODAL
+        // -------------------------------------------------------------------
+        function renderInventoryTable() {
+            const query = document.getElementById('inv-search').value.toLowerCase().trim();
+            const tbody = document.getElementById('inventory-tbody');
+
+            const filtered = inventory.filter(i =>
+                i.name.toLowerCase().includes(query) || i.category.toLowerCase().includes(query)
+            );
+
+            tbody.innerHTML = filtered.map(item => {
+                const isOut = item.stock === 0;
+                const isLow = item.stock > 0 && item.stock <= item.minStock;
+                const statusBadge = isOut
+                    ? `<span class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-rose-100 text-rose-700">Out of Stock</span>`
+                    : isLow
+                        ? `<span class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-amber-100 text-amber-800">Low Stock</span>`
+                        : `<span class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-700">In Stock</span>`;
+
+                return `
+                    <tr class="hover:bg-slate-50/80 transition">
+                        <td class="py-3.5 px-4 font-bold text-slate-800">${escapeHtml(item.name)}</td>
+                        <td class="py-3.5 px-4 text-slate-500">${escapeHtml(item.category)}</td>
+                        <td class="py-3.5 px-4 font-semibold text-slate-900">${formatINR(item.price)}</td>
+                        <td class="py-3.5 px-4 font-medium text-slate-600">${item.costPrice === null ? 'Not set' : formatINR(item.costPrice)}</td>
+                        <td class="py-3.5 px-4 font-extrabold ${isLow || isOut ? 'text-amber-600' : 'text-slate-800'}">${item.stock} units</td>
+                        <td class="py-3.5 px-4 text-slate-500">${item.minStock} units</td>
+                        <td class="py-3.5 px-4">${statusBadge}</td>
+                        <td class="py-3.5 px-4 text-right space-x-1.5">
+                            <button onclick="quickRestock(${item.id}, 10)" class="px-2.5 py-1 rounded-lg bg-indigo-50 hover:bg-indigo-600 text-indigo-700 hover:text-white font-semibold text-[11px] transition">
+                                +10 Stock
+                            </button>
+                            <button onclick="editProductCost(${item.id})" class="px-2.5 py-1 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-700 font-semibold text-[11px] transition">Set Cost</button>
+                            <button onclick="deleteInventoryItem(${item.id})" class="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition" title="Delete Product">
+                                <i data-lucide="trash-2" class="w-4 h-4 inline"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+            lucide.createIcons();
+        }
+
+        function openAddProductModal() {
+            document.getElementById('add-product-modal').classList.remove('hidden');
+        }
+
+        function closeAddProductModal() {
+            document.getElementById('add-product-modal').classList.add('hidden');
+        }
+
+        function handleAddProduct(e) {
+            e.preventDefault();
+            const name = document.getElementById('new-prod-name').value.trim();
+            const category = document.getElementById('new-prod-category').value;
+            const price = parseFloat(document.getElementById('new-prod-price').value);
+            const stock = parseInt(document.getElementById('new-prod-stock').value, 10);
+            const minStock = parseInt(document.getElementById('new-prod-min').value, 10);
+
+            if (!name || isNaN(price) || isNaN(stock)) return;
+
+            inventory.unshift({
+                id: Date.now(),
+                name,
+                category,
+                price,
+                stock,
+                minStock: minStock || 5,
+                soldCount: 0
+            });
+
+            e.target.reset();
+            closeAddProductModal();
+            refreshAllViews();
+            showToast(`Added "${name}" to Digital Inventory!`, 'success');
+        }
+
+        function deleteInventoryItem(id) {
+            inventory = inventory.filter(i => i.id !== id);
+            refreshAllViews();
+            showToast('Product removed from catalog.', 'info');
+        }
+
+        // -------------------------------------------------------------------
+        // 6. BUILT-IN AI WORKER & OWNER HELP CHATBOT (GEMINI API + SMART FALLBACK)
+        // -------------------------------------------------------------------
+        function toggleChatbot(forceOpen = null) {
+            const win = document.getElementById('ai-chat-window');
+            if (forceOpen === true) {
+                win.classList.remove('hidden');
+            } else if (forceOpen === false) {
+                win.classList.add('hidden');
+            } else {
+                win.classList.toggle('hidden');
+            }
+            lucide.createIcons();
+        }
+
+        function sendQuickPrompt(text) {
+            document.getElementById('ai-chat-input').value = text;
+            handleChatSubmit(new Event('submit'));
+        }
+
+        function appendChatMessage(sender, text) {
+            const container = document.getElementById('ai-chat-messages');
+            const wrapper = document.createElement('div');
+
+            if (sender === 'user') {
+                wrapper.className = 'flex justify-end';
+                wrapper.innerHTML = `
+                    <div class="bg-indigo-600 text-white rounded-2xl rounded-tr-none px-3.5 py-2.5 max-w-[82%] shadow-xs leading-relaxed">
+                        ${escapeHtml(text)}
+                    </div>
+                `;
+            } else {
+                wrapper.className = 'flex items-start gap-2.5';
+                wrapper.innerHTML = `
+                    <div class="w-7 h-7 rounded-lg bg-indigo-600 text-white flex items-center justify-center shrink-0 mt-0.5">
+                        <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+                    </div>
+                    <div class="bg-white border border-slate-200/80 rounded-2xl rounded-tl-none p-3 text-slate-700 max-w-[85%] shadow-2xs leading-relaxed">
+                        ${formatBotResponse(text)}
+                    </div>
+                `;
+            }
+
+            container.appendChild(wrapper);
+            container.scrollTop = container.scrollHeight;
+            lucide.createIcons();
+        }
+
+        function appendTypingIndicator() {
+            const container = document.getElementById('ai-chat-messages');
+            const el = document.createElement('div');
+            el.id = 'ai-typing-indicator';
+            el.className = 'flex items-start gap-2.5';
+            el.innerHTML = `
+                <div class="w-7 h-7 rounded-lg bg-indigo-600 text-white flex items-center justify-center shrink-0">
+                    <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+                </div>
+                <div class="bg-white border border-slate-200 rounded-2xl rounded-tl-none px-3.5 py-2.5 text-slate-400 text-xs animate-pulse-subtle">
+                    VyaparAI is thinking...
+                </div>
+            `;
+            container.appendChild(el);
+            container.scrollTop = container.scrollHeight;
+            lucide.createIcons();
+        }
+
+        function removeTypingIndicator() {
+            const el = document.getElementById('ai-typing-indicator');
+            if (el) el.remove();
+        }
+
+        async function handleChatSubmit(e) {
+            e.preventDefault();
+            const input = document.getElementById('ai-chat-input');
+            const query = input.value.trim();
+            if (!query) return;
+
+            input.value = '';
+            appendChatMessage('user', query);
+            appendTypingIndicator();
+
+            // Build live store context so AI knows exact numbers right now!
+            const todaySales = getTodayTotalSales();
+            const lowStockNames = inventory.filter(i => i.stock <= i.minStock).map(i => `${escapeHtml(i.name)} (${i.stock} left)`).join(', ') || 'None';
+            const bizName = currentOwner?.businessName || 'this store';
+
+            const systemPrompt = `You are VyaparAI, a friendly, concise onboarding & operations assistant built inside the "VyaparFlow Digital Inventory and Sales Management System" for Indian small businesses (Hotels, Supermarts, General Stores).
+Your job is to help new counter workers and business owners understand how to use the dashboard step-by-step.
+Current Live Store Context:
+- Business Name: ${bizName}
+- Today's Total Sales: ₹${todaySales.toFixed(2)} across ${bills.length} bills
+- Total Products in Catalog: ${inventory.length}
+- Currently Low-Stock Items: ${lowStockNames}
+Dashboard Navigation Guide:
+1. "Dashboard Reports": Shows KPI cards (Sales, Bills, Low-Stock count, Profit), Weekly Revenue chart, and one-click "+10 Restock" alerts.
+2. "Billing / POS Counter": Workers tap items to add to the cart, toggle 5% GST, pick UPI/Cash/Card, and click "Generate Bill & Deduct Stock" to create a printable receipt and auto-update inventory.
+3. "Digital Inventory": View all stock, click "+10 Stock" to replenish, or click "+ Add New Product" to add new items.
+Keep answers clear, structured with short bullet points, and easy for a new shop worker or project coordinator to understand.`;
+
+            try {
+                const reply = await callGeminiWithBackoff(systemPrompt, query);
+                removeTypingIndicator();
+                appendChatMessage('bot', reply);
+            } catch (err) {
+                removeTypingIndicator();
+                // Reliable local fallback so live presentation NEVER fails
+                const fallback = generateLocalSmartReply(query, todaySales, lowStockNames);
+                appendChatMessage('bot', fallback);
+            }
+        }
+
+        async function callGeminiWithBackoff(systemInstruction, userQuery) {
+            const apiKey = ""; // Runtime-provided key
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+
+            const payload = {
+                contents: [{ parts: [{ text: userQuery }] }],
+                systemInstruction: { parts: [{ text: systemInstruction }] }
+            };
+
+            const delays = [1000, 2000, 4000];
+            for (let attempt = 0; attempt <= delays.length; attempt++) {
+                try {
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    if (!response.ok) throw new Error('API Error');
+                    const data = await response.json();
+                    const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+                    if (text) return text;
+                    throw new Error('Empty response');
+                } catch (error) {
+                    if (attempt === delays.length) throw error;
+                    await new Promise(res => setTimeout(res, delays[attempt]));
+                }
+            }
+        }
+
+        function generateLocalSmartReply(query, todaySales, lowStockNames) {
+            const q = query.toLowerCase();
+            if (q.includes('bill') || q.includes('pos') || q.includes('customer') || q.includes('checkout')) {
+                return `Here is how a worker creates a customer bill in 4 easy steps:\n1. Open **Billing / POS Counter** from the left sidebar.\n2. Tap items from the catalog (or search by name) to add them to the cart.\n3. Select payment mode (**UPI / QR**, **Cash**, or **Card**) and optional **5% GST**.\n4. Click **Generate Bill & Deduct Stock** — the system automatically reduces stock and prints a receipt!`;
+            }
+            if (q.includes('restock') || q.includes('low') || q.includes('alert') || q.includes('stock')) {
+                return `To handle low-stock items:\n• Check the **Low-Stock Alerts** panel right on the main Dashboard or open **Digital Inventory**.\n• Currently low items: **${lowStockNames}**.\n• Simply click the **+10 Restock** button next to any item to replenish stock immediately.`;
+            }
+            if (q.includes('add') || q.includes('new product') || q.includes('item')) {
+                return `To add a new product or hotel dish:\n1. Go to **Digital Inventory** in the sidebar.\n2. Click the blue **+ Add New Product** button at the top right.\n3. Enter Item Name, Category, Selling Price (₹), Opening Stock, and Minimum Alert Level, then click **Save Product**.`;
+            }
+            if (q.includes('summary') || q.includes('sales') || q.includes('report')) {
+                return `📊 **Live Store Summary:**\n• **Today's Revenue:** ${formatINR(todaySales)} (${bills.length} bills generated)\n• **Catalog Size:** ${inventory.length} active items\n• **Attention Needed (Low Stock):** ${lowStockNames}`;
+            }
+            return `I can help you operate **VyaparFlow**! You can:\n• Click **Billing / POS Counter** to create customer bills & auto-deduct stock.\n• Click **Digital Inventory** to add new items or restock low inventory.\n• View **Dashboard Reports** to track daily ₹ sales and weekly trends.`;
+        }
+
+        function escapeHtml(str) {
+            return str.replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
+        }
+
+        function formatBotResponse(text) {
+            return escapeHtml(text)
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\n/g, '<br>');
+        }
+
+        // -------------------------------------------------------------------
+        // 7. TOAST NOTIFICATIONS
+        // -------------------------------------------------------------------
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            const colors = {
+                success: 'bg-emerald-900 text-white border-emerald-700',
+                warning: 'bg-amber-900 text-white border-amber-700',
+                info: 'bg-slate-900 text-white border-slate-700'
+            };
+            toast.className = `pointer-events-auto px-4 py-3 rounded-xl shadow-lg border text-xs font-semibold flex items-center gap-2.5 animate-slide-up ${colors[type] || colors.info}`;
+            toast.innerHTML = `<span>${escapeHtml(message)}</span>`;
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transition = 'opacity 0.3s ease';
+                setTimeout(() => toast.remove(), 300);
+            }, 3200);
+        }
+    </script>
+    <script src="/api.js"></script>
+</body>
+</html>

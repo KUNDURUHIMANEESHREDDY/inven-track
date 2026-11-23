@@ -1,0 +1,11 @@
+**/__pycache__/
+**/.pytest_cache/
+.venv/
+.git/
+.env
+.env.*
+*.sqlite3
+*.sqlite3-*
+backups/
+**/*.vfbackup
+**/.backup-key
