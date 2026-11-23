@@ -314,8 +314,8 @@
     };
 
     window.callGeminiWithBackoff = async function(_systemInstruction, userQuery) {
-        const result = await api('/api/assistant', {
-            method: 'POST', body: JSON.stringify({ message: userQuery })
+        const result = await api('/api/ai/chat', {
+            method: 'POST', body: JSON.stringify({ message: userQuery, bot: document.getElementById('ai-chat-bot')?.value || 'staff' })
         });
         return result.reply;
     };

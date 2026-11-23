@@ -9,3 +9,5 @@
 backups/
 **/*.vfbackup
 **/.backup-key
+
+**/.ai_key

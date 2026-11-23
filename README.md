@@ -23,3 +23,10 @@ Tests: py -m pytest -q tests
 - Optional Gemini API backend with local frontend help fallback
 
 See DEPLOYMENT.md for setup and limitations. Do not place API keys into the frontend or commit backup keys, .env or databases.
+
+## AI Model Studio
+Log in and select **AI Model Studio** in the sidebar. Click **Connect new model**, choose OpenAI, Gemini, Anthropic, OpenRouter, Groq, Together or a custom HTTPS endpoint, enter the model ID and optional API key, then save. **Test** uses a real provider request and may consume credits. Assign a model and optional instructions separately to Staff Assistant, Sales Analyst and Inventory Guide. The chat widget lets you switch bots.
+
+Provider credentials are encrypted in SQLite using INVENTRACK_AI_KEY (Fernet). Without this environment variable, a private .ai_key file is created beside the SQLite database; securely back it up with the database. A lost encryption key makes saved provider credentials unreadable. Secrets never appear in API responses or browser storage. Custom endpoints must resolve to public HTTPS addresses. Only use trusted endpoints, since each provider receives its configured key and chat queries.
+
+Run `py -m pytest -q tests/test_ai_models.py` to verify key protection, provider formats, bot routing and tenant isolation without making paid provider requests.

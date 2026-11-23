@@ -60,3 +60,10 @@ For a real restore, stop the app first; do not overwrite an active SQLite DB. Ke
 - Offsite backups and failure-recovery drill not configured
 - Operational observability, performance, load tests and independent public security review not done
 - Merchant onboarding/KYC and production compliance not completed
+
+## AI Model Studio deployment
+The AI Model Studio provides per-owner encrypted model credentials, custom HTTPS base endpoints and separate model assignments for Staff Assistant, Sales Analyst and Inventory Guide. OpenAI-compatible, Google Gemini and Anthropic API formats are supported. The chat widget uses the selected bot's assigned model, with the existing GEMINI_API_KEY fallback for an unassigned staff bot.
+
+Set INVENTRACK_AI_KEY to a persistent Fernet key in the server environment. Generate with `python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"`. Docker Compose forwards this variable if set in .env. Without it, the backend creates .ai_key alongside the SQLite database in persistent /data storage. Back up this secret together with the database; do not commit or share either. If lost, stored provider credentials cannot be decrypted. Use the same encryption key across app replicas.
+
+Providers receive user queries and any relevant store data included in chatbot context. Choose trustworthy providers only. Keys are never returned by the API. Model connection tests can consume credits. HTTP redirects are disabled; private network endpoints are rejected. The new unit tests mock provider calls; production vendor connectivity still requires authorized credentials and a live integration test.

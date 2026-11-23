@@ -315,6 +315,13 @@
                             <span>Sales & Bills Log</span>
                         </span>
                     </button>
+                    <button onclick="switchTab('ai')" id="nav-ai" class="nav-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                        <span class="flex items-center gap-3">
+                            <i data-lucide="brain-circuit" class="w-4 h-4"></i>
+                            <span>AI Model Studio</span>
+                        </span>
+                        <span class="text-[10px] bg-indigo-500/20 text-indigo-200 px-2 py-0.5 rounded-md font-bold">NEW</span>
+                    </button>
                 </nav>
             </div>
 
@@ -723,6 +730,83 @@
                     </div>
                 </section>
 
+                <!-- AI Model Studio: private per-business model and bot configuration -->
+                <section id="view-ai" class="hidden space-y-6 animate-slide-up">
+                    <div class="relative overflow-hidden bg-slate-950 rounded-3xl p-6 sm:p-8 text-white border border-slate-800 shadow-xl">
+                        <div class="absolute -right-20 -top-28 w-80 h-80 bg-indigo-500/20 blur-3xl rounded-full pointer-events-none"></div>
+                        <div class="absolute right-20 -bottom-36 w-64 h-64 bg-cyan-500/10 blur-3xl rounded-full pointer-events-none"></div>
+                        <div class="relative z-10 flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
+                            <div class="max-w-2xl">
+                                <div class="inline-flex items-center gap-2 rounded-full border border-indigo-400/25 bg-indigo-400/10 px-3 py-1.5 text-[11px] uppercase tracking-widest text-indigo-200 font-bold mb-5">
+                                    <i data-lucide="sparkles" class="w-3.5 h-3.5"></i> AI CONTROL CENTER
+                                </div>
+                                <h2 class="font-display font-extrabold text-2xl sm:text-3xl tracking-tight">Your AI. Your models. Your rules.</h2>
+                                <p class="text-slate-300 text-sm leading-relaxed mt-3">Connect providers, manage models and choose which intelligence powers each assistant—all in one secure workspace.</p>
+                            </div>
+                            <button type="button" onclick="aiOpenModelModal()" class="shrink-0 inline-flex items-center justify-center gap-2 bg-white hover:bg-indigo-50 text-slate-900 font-bold px-5 py-3 rounded-xl shadow-lg text-sm transition">
+                                <i data-lucide="plus" class="w-4 h-4"></i> Connect new model
+                            </button>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
+                            <div class="flex justify-between items-center mb-4"><p class="text-xs font-semibold text-slate-500">Configured models</p><span class="bg-indigo-50 text-indigo-600 p-2 rounded-xl"><i data-lucide="brain-circuit" class="w-5 h-5"></i></span></div>
+                            <div class="font-display font-extrabold text-3xl text-slate-900" id="ai-model-total">0</div>
+                            <p class="text-xs text-slate-400 mt-1">Ready to assign to assistants</p>
+                        </div>
+                        <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
+                            <div class="flex justify-between items-center mb-4"><p class="text-xs font-semibold text-slate-500">Active bot assignments</p><span class="bg-emerald-50 text-emerald-600 p-2 rounded-xl"><i data-lucide="bot" class="w-5 h-5"></i></span></div>
+                            <div class="font-display font-extrabold text-3xl text-slate-900" id="ai-active-total">0 <span class="text-base text-slate-400 font-medium">/ 3</span></div>
+                            <p class="text-xs text-slate-400 mt-1">Independent model routing per bot</p>
+                        </div>
+                        <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
+                            <div class="flex justify-between items-center mb-4"><p class="text-xs font-semibold text-slate-500">Secret storage</p><span class="bg-emerald-50 text-emerald-600 p-2 rounded-xl"><i data-lucide="shield-check" class="w-5 h-5"></i></span></div>
+                            <div class="font-display font-bold text-lg text-slate-900 mt-1">Server-side encrypted</div>
+                            <p class="text-xs text-slate-400 mt-1">API keys never returned to the page</p>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 xl:grid-cols-12 gap-6 items-start">
+                        <div class="xl:col-span-8 space-y-6 min-w-0">
+                            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                                <div class="p-5 sm:p-6 border-b border-slate-100 flex flex-wrap justify-between items-start gap-3">
+                                    <div><h3 class="font-display font-bold text-lg text-slate-900">Model connections</h3><p class="text-xs text-slate-500 mt-1">Add, edit, test or remove provider configurations.</p></div>
+                                    <button onclick="aiOpenModelModal()" class="flex items-center gap-1.5 text-xs font-bold text-indigo-600 hover:text-indigo-800"><i data-lucide="plus-circle" class="w-4 h-4"></i> Add connection</button>
+                                </div>
+                                <div id="ai-model-list" class="divide-y divide-slate-100">
+                                    <div class="p-10 text-center text-sm text-slate-500">Loading model connections...</div>
+                                </div>
+                            </div>
+                            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 sm:p-6">
+                                <div class="flex flex-wrap justify-between items-start gap-3 mb-5">
+                                    <div><h3 class="font-display font-bold text-lg text-slate-900">Assistant routing</h3><p class="text-xs text-slate-500 mt-1">Choose a separate model and instruction for every bot.</p></div>
+                                    <span class="text-[11px] font-semibold text-indigo-600 bg-indigo-50 border border-indigo-100 rounded-full px-3 py-1.5">3 built-in assistants</span>
+                                </div>
+                                <div id="ai-bot-list" class="space-y-3"></div>
+                            </div>
+                        </div>
+                        <div class="xl:col-span-4 space-y-5">
+                            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5">
+                                <div class="flex items-center gap-2 mb-3"><i data-lucide="plug-zap" class="w-4 h-4 text-indigo-600"></i><h3 class="text-sm font-bold text-slate-900">Supported providers</h3></div>
+                                <div class="grid grid-cols-2 gap-2 text-xs font-semibold text-slate-700">
+                                    <span class="rounded-xl border border-slate-100 bg-slate-50 p-3">OpenAI</span>
+                                    <span class="rounded-xl border border-slate-100 bg-slate-50 p-3">Gemini</span>
+                                    <span class="rounded-xl border border-slate-100 bg-slate-50 p-3">Anthropic</span>
+                                    <span class="rounded-xl border border-slate-100 bg-slate-50 p-3">OpenRouter</span>
+                                    <span class="rounded-xl border border-slate-100 bg-slate-50 p-3">Groq</span>
+                                    <span class="rounded-xl border border-slate-100 bg-slate-50 p-3">Together</span>
+                                </div>
+                                <p class="mt-3 text-xs text-slate-500">Also supports custom HTTPS endpoints using OpenAI-compatible, Gemini or Anthropic request formats.</p>
+                            </div>
+                            <div class="rounded-2xl bg-indigo-50/80 border border-indigo-100 p-5">
+                                <div class="flex gap-3"><span class="p-2 bg-white rounded-xl text-indigo-600 h-fit"><i data-lucide="lock-keyhole" class="w-5 h-5"></i></span><div><h4 class="font-bold text-sm text-slate-900">Credentials stay private</h4><p class="text-xs text-slate-600 leading-relaxed mt-2">Keys are saved encrypted in your backend, never in browser storage. Leave the API key field empty when editing to keep the current key.</p></div></div>
+                            </div>
+                            <div class="rounded-2xl bg-amber-50/70 border border-amber-100 p-5">
+                                <div class="flex gap-3"><i data-lucide="info" class="w-5 h-5 text-amber-600 shrink-0 mt-0.5"></i><p class="text-xs text-amber-900 leading-relaxed">Test Connection sends a real provider request and may consume credits. Custom endpoints receive the API key you enter; connect only trusted services.</p></div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
             </main>
         </div>
     </div>
@@ -825,6 +909,59 @@
         </div>
     </div>
 
+    <!-- Model connection dialog -->
+    <div id="ai-model-modal" class="fixed inset-0 z-[70] bg-slate-950/70 backdrop-blur-sm hidden overflow-y-auto p-4 sm:p-8" role="dialog" aria-modal="true" aria-labelledby="ai-modal-title">
+        <div class="min-h-full flex items-center justify-center">
+            <form id="ai-model-form" onsubmit="aiSaveModel(event)" class="bg-white w-full max-w-2xl rounded-3xl shadow-2xl overflow-hidden border border-slate-200">
+                <div class="flex items-start justify-between gap-4 px-6 py-5 border-b border-slate-100">
+                    <div class="flex gap-3 items-center">
+                        <span class="w-11 h-11 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center"><i data-lucide="brain-circuit" class="w-6 h-6"></i></span>
+                        <div><h3 id="ai-modal-title" class="font-display font-bold text-lg text-slate-900">Connect an AI model</h3><p class="text-xs text-slate-500 mt-0.5">Configure a provider securely</p></div>
+                    </div>
+                    <button type="button" onclick="aiCloseModelModal()" aria-label="Close" class="p-2 rounded-xl hover:bg-slate-100 text-slate-500"><i data-lucide="x" class="w-5 h-5"></i></button>
+                </div>
+                <div class="p-6 space-y-5 max-h-[68vh] overflow-y-auto">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div><label for="ai-provider" class="block text-xs font-bold text-slate-700 mb-2">Provider</label>
+                            <select id="ai-provider" onchange="aiProviderChanged()" class="w-full px-3.5 py-3 bg-slate-50 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-200 focus:border-indigo-500 outline-none text-sm"></select>
+                        </div>
+                        <div><label for="ai-model-name" class="block text-xs font-bold text-slate-700 mb-2">Connection name</label>
+                            <input id="ai-model-name" required maxlength="70" placeholder="e.g. Fast staff model" class="w-full px-3.5 py-3 bg-slate-50 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-200 focus:border-indigo-500 outline-none text-sm">
+                        </div>
+                    </div>
+                    <div><label for="ai-protocol" class="block text-xs font-bold text-slate-700 mb-2">API format</label>
+                        <select id="ai-protocol" class="w-full px-3.5 py-3 bg-slate-50 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-200 focus:border-indigo-500 outline-none text-sm">
+                            <option value="openai">OpenAI-compatible /chat/completions</option>
+                            <option value="gemini">Google Gemini generateContent</option>
+                            <option value="anthropic">Anthropic Messages API</option>
+                        </select>
+                    </div>
+                    <div><label for="ai-endpoint" class="block text-xs font-bold text-slate-700 mb-2">Base endpoint URL</label>
+                        <input id="ai-endpoint" required type="url" maxlength="500" placeholder="https://api.example.com/v1" class="w-full px-3.5 py-3 bg-slate-50 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-200 focus:border-indigo-500 outline-none text-sm font-mono">
+                        <p class="text-[11px] text-slate-500 mt-1.5">HTTPS only. Enter the API base URL; the chat route is added automatically.</p>
+                    </div>
+                    <div><label for="ai-model-id" class="block text-xs font-bold text-slate-700 mb-2">Provider model ID</label>
+                        <input id="ai-model-id" required maxlength="180" placeholder="e.g. gpt-4.1-mini" class="w-full px-3.5 py-3 bg-slate-50 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-200 focus:border-indigo-500 outline-none text-sm font-mono">
+                        <div class="flex items-center gap-2 mt-2">
+                            <button id="ai-discover-button" type="button" onclick="aiDiscoverModels()" class="text-indigo-600 hover:text-indigo-800 text-xs font-semibold flex items-center gap-1"><i data-lucide="search" class="w-3.5 h-3.5"></i> Fetch available models</button>
+                            <span id="ai-discover-note" class="text-[11px] text-slate-400">Save the connection first to fetch models.</span>
+                        </div>
+                        <div id="ai-discover-results" class="hidden max-h-36 overflow-y-auto border border-slate-200 rounded-xl mt-2"></div>
+                    </div>
+                    <div><label for="ai-api-key" class="block text-xs font-bold text-slate-700 mb-2">API key <span class="font-normal text-slate-400">(stored encrypted)</span></label>
+                        <div class="flex gap-2"><input id="ai-api-key" type="password" autocomplete="new-password" spellcheck="false" maxlength="2048" placeholder="Paste your secret key" class="min-w-0 flex-1 px-3.5 py-3 bg-slate-50 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-200 focus:border-indigo-500 outline-none text-sm font-mono"><button type="button" onclick="aiToggleKey()" id="ai-key-toggle" class="shrink-0 px-3 rounded-xl border border-slate-200 text-slate-500 hover:bg-slate-50" aria-label="Show or hide API key"><i data-lucide="eye" class="w-4 h-4"></i></button></div>
+                        <p id="ai-key-note" class="text-[11px] text-slate-500 mt-1.5">A key is optional for endpoints that do not require authentication.</p>
+                        <label id="ai-clear-key-row" class="hidden mt-3 flex items-center gap-2 text-xs text-slate-600 cursor-pointer"><input type="checkbox" id="ai-clear-key" class="accent-indigo-600"> Remove currently saved API key</label>
+                    </div>
+                </div>
+                <div class="flex justify-end gap-3 items-center border-t border-slate-100 bg-slate-50 px-6 py-4">
+                    <button type="button" onclick="aiCloseModelModal()" class="px-4 py-2.5 text-sm font-semibold text-slate-600 hover:text-slate-900">Cancel</button>
+                    <button id="ai-save-model" type="submit" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm text-sm font-semibold"><i data-lucide="check" class="w-4 h-4"></i> Save connection</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- =====================================================================
          4. BUILT-IN AI CHATBOT WIDGET (WORKER ONBOARDING & OWNER HELP)
     ====================================================================== -->
@@ -840,7 +977,7 @@
                         <i data-lucide="bot" class="w-5 h-5 text-amber-300"></i>
                     </div>
                     <div>
-                        <h4 class="font-display font-bold text-sm leading-tight">VyaparAI Staff Assistant</h4>
+                        <h4 class="font-display font-bold text-sm leading-tight">VyaparAI Assistant</h4>
                         <p class="text-[11px] text-indigo-200 flex items-center gap-1">
                             <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
                             Worker Training & Store Help
@@ -850,6 +987,16 @@
                 <button onclick="toggleChatbot(false)" class="p-1.5 rounded-lg hover:bg-white/15 text-indigo-100 transition">
                     <i data-lucide="chevron-down" class="w-5 h-5"></i>
                 </button>
+            </div>
+
+            <div class="bg-indigo-800 px-4 pb-2.5 text-white flex items-center gap-2">
+                <span class="text-[11px] text-indigo-200">Chat as</span>
+                <select id="ai-chat-bot" aria-label="Choose assistant" class="flex-1 text-xs rounded-lg bg-indigo-700 border border-indigo-500 px-2 py-1.5 text-white focus:outline-none">
+                    <option value="staff">Staff Assistant</option>
+                    <option value="sales">Sales Analyst</option>
+                    <option value="inventory">Inventory Guide</option>
+                </select>
+                <button type="button" onclick="toggleChatbot(false); switchTab('ai')" title="Configure AI" class="p-1.5 hover:bg-white/15 rounded-lg"><i data-lucide="settings-2" class="w-4 h-4"></i></button>
             </div>
 
             <!-- Messages Stream -->
@@ -1089,12 +1236,13 @@
         // 2. NAVIGATION & VIEW SWITCHING
         // -------------------------------------------------------------------
         function switchTab(tabName) {
-            const views = ['overview', 'billing', 'inventory', 'transactions'];
+            const views = ['overview', 'billing', 'inventory', 'transactions', 'ai'];
             const titles = {
                 overview: ['Dashboard Overview & Reports', 'Real-time sales performance, inventory health & low-stock alerts'],
                 billing: ['POS Counter & Quick Billing', 'Select items, apply GST, choose payment mode & auto-deduct stock'],
                 inventory: ['Digital Inventory Management', 'Track stock quantities, restock low items & add new products'],
-                transactions: ['Sales & Billing Audit Log', 'Complete history of generated customer invoices']
+                transactions: ['Sales & Billing Audit Log', 'Complete history of generated customer invoices'],
+                ai: ['AI Model Studio', 'Connect providers, protect API keys and route models to your chatbots']
             };
 
             views.forEach(v => {
@@ -1119,6 +1267,7 @@
             }
 
             refreshAllViews();
+            if (tabName === 'ai' && window.aiLoadSettings) window.aiLoadSettings();
         }
 
         function toggleMobileSidebar() {
@@ -1694,9 +1843,15 @@ Keep answers clear, structured with short bullet points, and easy for a new shop
                 appendChatMessage('bot', reply);
             } catch (err) {
                 removeTypingIndicator();
-                // Reliable local fallback so live presentation NEVER fails
-                const fallback = generateLocalSmartReply(query, todaySales, lowStockNames);
-                appendChatMessage('bot', fallback);
+                const reason = err && err.message ? err.message : 'Provider unavailable';
+                if (reason.includes('Assign a model')) {
+                    appendChatMessage('bot', 'No model is assigned to this assistant yet. Open AI Model Studio to connect and assign a model.');
+                } else if (reason.includes('log in') || reason.includes('Session expired')) {
+                    appendChatMessage('bot', 'Your session expired. Sign in again to use AI chat.');
+                } else {
+                    const fallback = generateLocalSmartReply(query, todaySales, lowStockNames);
+                    appendChatMessage('bot', 'Live model unavailable — showing built-in help instead:\n' + fallback);
+                }
             }
         }
 
@@ -1779,5 +1934,6 @@ Keep answers clear, structured with short bullet points, and easy for a new shop
         }
     </script>
     <script src="/api.js"></script>
+    <script src="/ai_models.js"></script>
 </body>
 </html>

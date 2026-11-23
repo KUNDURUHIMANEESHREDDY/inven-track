@@ -11,6 +11,7 @@ services:
       RAZORPAY_MODE: ${RAZORPAY_MODE:-test}
       ENABLE_LIVE_PAYMENTS: ${ENABLE_LIVE_PAYMENTS:-NO}
       GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      INVENTRACK_AI_KEY: ${INVENTRACK_AI_KEY:-}
     volumes:
       - app_data:/data
     expose:
