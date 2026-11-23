@@ -32,6 +32,7 @@ PROVIDERS = {
     "gemini": {"label": "Google Gemini", "protocol": "gemini", "endpoint": "https://generativelanguage.googleapis.com/v1beta", "model": "gemini-2.5-flash"},
     "anthropic": {"label": "Anthropic", "protocol": "anthropic", "endpoint": "https://api.anthropic.com/v1", "model": "claude-sonnet-4-5"},
     "openrouter": {"label": "OpenRouter", "protocol": "openai", "endpoint": "https://openrouter.ai/api/v1", "model": "openai/gpt-4.1-mini"},
+    "9router": {"label": "9Router", "protocol": "openai", "endpoint": "https://9router.com/v1", "model": "if/qwen3-coder-plus"},
     "groq": {"label": "Groq", "protocol": "openai", "endpoint": "https://api.groq.com/openai/v1", "model": "llama-3.3-70b-versatile"},
     "together": {"label": "Together AI", "protocol": "openai", "endpoint": "https://api.together.xyz/v1", "model": "meta-llama/Llama-3.3-70B-Instruct-Turbo"},
     "custom": {"label": "Custom endpoint", "protocol": "openai", "endpoint": "", "model": ""},

@@ -141,3 +141,39 @@ def test_provider_protocols_and_private_endpoint_blocking(monkeypatch):
     with pytest.raises(HTTPException) as error:
         ai_models.public_destination("https://127.0.0.1/latest/metadata")
     assert error.value.status_code == 422
+
+def test_9router_preset_end_to_end_with_mock_gateway(client, monkeypatch):
+    """Verify the full form -> encrypted key -> test -> bot -> chat path without provider charges."""
+    create_owner(client)
+    config = client.get("/api/ai/config").json()
+    preset = config["providers"]["9router"]
+    assert preset["endpoint"] == "https://9router.com/v1"
+    assert preset["protocol"] == "openai"
+    assert preset["model"].startswith("if/")
+    payload = model_input(
+        provider="9router", protocol=preset["protocol"], endpoint=preset["endpoint"],
+        modelId=preset["model"], name="9Router Test", apiKey="9r_FAKE_TEST_ONLY")
+    created = client.post("/api/ai/models", json=payload)
+    assert created.status_code == 201, created.text
+    mid = created.json()["id"]
+    assert "9r_FAKE_TEST_ONLY" not in created.text
+    assert created.json()["hasKey"] is True
+    request_capture = []
+
+    def fake_http(url, body, headers):
+        request_capture.append((url, body, headers))
+        return {"choices": [{"message": {"content": "9Router mocked reply"}}]}
+
+    monkeypatch.setattr(ai_models, "public_destination", lambda _: None)
+    monkeypatch.setattr(ai_models, "http_json", fake_http)
+    tested = client.post(f"/api/ai/models/{mid}/test")
+    assert tested.status_code == 200, tested.text
+    assert tested.json()["connected"] is True
+    assert request_capture[0][0] == "https://9router.com/v1/chat/completions"
+    assert request_capture[0][1]["model"] == preset["model"]
+    assert request_capture[0][2]["Authorization"] == "Bearer 9r_FAKE_TEST_ONLY"
+    assert client.put("/api/ai/bots/staff", json={"modelId": mid, "extraInstruction": ""}).status_code == 200
+    answer = client.post("/api/ai/chat", json={"bot": "staff", "message": "Hello"})
+    assert answer.status_code == 200, answer.text
+    assert answer.json()["reply"] == "9Router mocked reply"
+    assert "9r_FAKE_TEST_ONLY" not in client.get("/api/ai/config").text

@@ -138,7 +138,9 @@
         byId('ai-clear-key-row').classList.toggle('hidden', !(model && model.hasKey));
         byId('ai-key-note').textContent = model && model.hasKey ?
             'Key already stored securely. Leave blank to keep the existing key.' :
-            'A key is optional for endpoints that do not require authentication.';
+            (model && model.provider === '9router' ?
+                'Get your 9Router gateway key under Dashboard → Settings → API Keys.' :
+                'A key is optional for endpoints that do not require authentication.');
         byId('ai-discover-button').disabled = !model;
         byId('ai-discover-button').classList.toggle('opacity-40', !model);
         byId('ai-discover-note').classList.toggle('hidden', !!model);
@@ -156,6 +158,9 @@
         byId('ai-protocol').value = p.protocol;
         byId('ai-endpoint').value = p.endpoint || '';
         byId('ai-model-id').value = p.model || '';
+        byId('ai-key-note').textContent = p.label === '9Router' ?
+            'Get your 9Router gateway key in Dashboard → Settings → API Keys. Cloud endpoint availability may vary.' :
+            'A key is optional for endpoints that do not require authentication.';
         if (!editingId) byId('ai-model-name').value = p.label === 'Custom endpoint' ? '' : p.label + ' model';
     };
     window.aiCloseModelModal = function() {
