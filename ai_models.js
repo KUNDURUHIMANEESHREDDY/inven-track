@@ -19,6 +19,12 @@
     function message(msg, type) {
         if (typeof window.showToast === 'function') window.showToast(msg, type || 'info');
     }
+    function showSaveError(msg) {
+        const banner = byId('ai-save-error');
+        if (!banner) return;
+        banner.textContent = msg || '';
+        banner.classList.toggle('hidden', !msg);
+    }
     function refreshIcons() { if (window.lucide) window.lucide.createIcons(); }
     async function request(url, init) {
         const response = await fetch(url, Object.assign({
@@ -28,8 +34,20 @@
         const body = await response.json().catch(function () { return {}; });
         if (!response.ok) {
             const details = body.detail;
+            const labels = { name: 'Connection name', provider: 'Provider', protocol: 'API format',
+                endpoint: 'Base endpoint', modelId: 'Model ID', apiKey: 'API key' };
+            if (Array.isArray(details) && details.length) {
+                const errors = details.slice(0, 3).map(function(item) {
+                    const field = Array.isArray(item.loc) ? item.loc[item.loc.length - 1] : '';
+                    const title = labels[field] || 'Form';
+                    const reason = String(item.msg || 'Invalid value').replace(/^Value error,?\s*/i, '');
+                    return title + ': ' + reason;
+                });
+                throw new Error(errors.join('; ') || 'Invalid AI model settings');
+            }
             throw new Error(typeof details === 'string' ? details :
-                (response.status === 401 ? 'Log in to configure AI models' : 'Request failed (' + response.status + ')'));
+                (response.status === 401 ? 'Log in to configure AI models' :
+                'The server could not save this request (HTTP ' + response.status + ')'));
         }
         return body;
     }
@@ -126,6 +144,7 @@
         const model = registry.models.find(function(m) { return m.id === editingId; });
         if (!byId('ai-model-modal')) return;
         byId('ai-model-form').reset();
+        showSaveError('');
         byId('ai-provider').innerHTML = providerOptions();
         byId('ai-provider').value = model ? model.provider : 'openai';
         byId('ai-model-name').value = model ? model.name : '';
@@ -153,6 +172,7 @@
         byId('ai-model-name').focus();
     };
     window.aiProviderChanged = function() {
+        showSaveError('');
         const p = registry.providers[byId('ai-provider').value];
         if (!p) return;
         byId('ai-protocol').value = p.protocol;
@@ -176,6 +196,7 @@
     window.aiSaveModel = async function(event) {
         event.preventDefault();
         const btn = byId('ai-save-model');
+        showSaveError('');
         const id = editingId;
         const payload = {
             provider: byId('ai-provider').value,
@@ -183,7 +204,7 @@
             name: byId('ai-model-name').value.trim(),
             endpoint: byId('ai-endpoint').value.trim(),
             modelId: byId('ai-model-id').value.trim(),
-            apiKey: byId('ai-api-key').value,
+            apiKey: byId('ai-api-key').value.trim(),
             clearKey: byId('ai-clear-key').checked
         };
         btn.disabled = true; btn.classList.add('opacity-60');
@@ -194,7 +215,10 @@
             aiCloseModelModal();
             await aiLoadSettings();
             message('AI model connection saved.', 'success');
-        } catch (err) { message(err.message, 'warning'); }
+        } catch (err) {
+            showSaveError(err.message);
+            message('Model connection could not be saved: ' + err.message, 'warning');
+        }
         finally { btn.disabled = false; btn.classList.remove('opacity-60'); }
     };
     window.aiSaveBot = async function(slug) {
