@@ -30,6 +30,11 @@ PAYMENTS = {"Cash", "Card", "UPI / QR", "Online (Razorpay)"}
 
 @contextmanager
 def database():
+    if os.getenv("DATABASE_URL"):
+        from backend.postgres import postgres_database
+        with postgres_database(os.environ["DATABASE_URL"]) as con:
+            yield con
+        return
     DB_PATH.parent.mkdir(parents=True, exist_ok=True)
     con = sqlite3.connect(str(DB_PATH), timeout=15)
     con.row_factory = sqlite3.Row
@@ -131,6 +136,10 @@ def migrate_schema(con):
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
+    if os.getenv("RENDER_SERVICE_ID") and not os.getenv("DATABASE_URL") and os.getenv("INVENTRACK_DEMO_ONLY") != "1":
+        raise RuntimeError("Refusing to accept real data on an ephemeral Render filesystem; configure DATABASE_URL")
+    if os.getenv("DATABASE_URL") and not os.getenv("INVENTRACK_AI_KEY"):
+        raise RuntimeError("Persistent DATABASE_URL requires a persistent INVENTRACK_AI_KEY for encrypted AI model credentials")
     init_db()
     from backend.ai_models import init_ai_db
     init_ai_db()
@@ -470,7 +479,7 @@ def ai_frontend_script():
 
 @app.get("/api/health")
 def health():
-    return {"status": "ok", "service": "VyaparFlow", "demoOnly": os.getenv("INVENTRACK_DEMO_ONLY") == "1"}
+    return {"status": "ok", "service": "VyaparFlow", "demoOnly": os.getenv("INVENTRACK_DEMO_ONLY") == "1", "database": "postgresql" if os.getenv("DATABASE_URL") else "sqlite-ephemeral"}
 
 
 @app.post("/api/auth/register", status_code=201)
@@ -511,6 +520,9 @@ def login(payload: Login, request: Request, response: Response):
 def demo_login(request: Request, response: Response):
     enforce_limit(request, "demo", 8, 3600)
     with database() as con:
+        # Expire old demo shops to avoid filling free PostgreSQL storage.
+        con.execute("DELETE FROM owners WHERE is_demo=1 AND created_at<?",
+                    (dt_iso(utcnow() - timedelta(days=1)),))
         identity = secrets.token_hex(12)
         cur = con.execute("""
             INSERT INTO owners(email,mobile,password_hash,business_name,business_type,is_demo,created_at)

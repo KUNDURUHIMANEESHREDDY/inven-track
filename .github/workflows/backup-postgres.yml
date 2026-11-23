@@ -1,0 +1,52 @@
+name: Encrypted PostgreSQL backup
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "27 2 * * *"
+
+permissions:
+  contents: read
+
+jobs:
+  encrypted-backup:
+    if: ${{ vars.ENABLE_PG_BACKUPS == 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install backup encryption tools
+        run: python -m pip install "cryptography>=43,<49" "psycopg[binary]>=3.2,<4"
+      - name: Export PostgreSQL custom-format dump
+        env:
+          PGDATABASE: ${{ secrets.NEON_DATABASE_URL }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$PGDATABASE"
+          mkdir -p backups
+          docker run --rm --network host -e PGDATABASE \
+            -v "${PWD}/backups:/out" postgres:18-alpine \
+            sh -ec 'pg_dump --no-owner --no-privileges --format=custom --file=/out/plain.dump && pg_restore --list /out/plain.dump >/dev/null'
+      - name: Encrypt and validate exported backup
+        env:
+          BACKUP_ENCRYPTION_KEY: ${{ secrets.BACKUP_ENCRYPTION_KEY }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$BACKUP_ENCRYPTION_KEY"
+          python -m backend.postgres_backup seal backups/plain.dump \
+            --output "backups/inven-$(date -u +%Y%m%dT%H%M%SZ).vfpga"
+      - name: Delete plaintext dump
+        if: always()
+        run: rm -f backups/plain.dump
+      - name: Store encrypted backup offsite
+        uses: actions/upload-artifact@v4
+        with:
+          name: inven-track-encrypted-backup-${{ github.run_id }}
+          path: backups/*.vfpga
+          retention-days: 7
+          if-no-files-found: error

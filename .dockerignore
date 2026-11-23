@@ -11,3 +11,9 @@ backups/
 **/.backup-key
 
 **/.ai_key
+
+# Never bake database backups or private credentials into images
+**/*.vfpga
+**/*.dump
+**/*.sql
+.github/

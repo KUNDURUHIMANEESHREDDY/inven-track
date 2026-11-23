@@ -19,3 +19,8 @@ scripts/plan_check.graphql
 
 # Server-side AI credential encryption key (never commit)
 **/.ai_key
+
+# Encrypted PostgreSQL backups and unencrypted SQL dumps
+*.vfpga
+*.dump
+*.sql
