@@ -1759,6 +1759,7 @@
         }
 
         function sendQuickPrompt(text) {
+            if (aiChatInFlight) return;
             document.getElementById('ai-chat-input').value = text;
             handleChatSubmit(new Event('submit'));
         }
@@ -1814,78 +1815,63 @@
             if (el) el.remove();
         }
 
+        // The floating AI assistant uses the same secured, owner-scoped backend
+        // as AI Model Studio, never a browser-side provider API key.
+        let aiChatInFlight = false;
+
         async function handleChatSubmit(e) {
-            e.preventDefault();
+            if (e && typeof e.preventDefault === 'function') e.preventDefault();
+            if (aiChatInFlight) return;
             const input = document.getElementById('ai-chat-input');
+            const sendButton = document.getElementById('ai-send-btn');
             const query = input.value.trim();
             if (!query) return;
+            if (query.length > 2000) {
+                appendChatMessage('bot', 'Please keep your message under 2000 characters.');
+                return;
+            }
 
+            aiChatInFlight = true;
             input.value = '';
+            if (sendButton) sendButton.disabled = true;
             appendChatMessage('user', query);
             appendTypingIndicator();
 
-            // Build live store context so AI knows exact numbers right now!
-            const todaySales = getTodayTotalSales();
-            const lowStockNames = inventory.filter(i => i.stock <= i.minStock).map(i => `${escapeHtml(i.name)} (${i.stock} left)`).join(', ') || 'None';
-            const bizName = currentOwner?.businessName || 'this store';
-
-            const systemPrompt = `You are VyaparAI, a friendly, concise onboarding & operations assistant built inside the "VyaparFlow Digital Inventory and Sales Management System" for Indian small businesses (Hotels, Supermarts, General Stores).
-Your job is to help new counter workers and business owners understand how to use the dashboard step-by-step.
-Current Live Store Context:
-- Business Name: ${bizName}
-- Today's Total Sales: ₹${todaySales.toFixed(2)} across ${bills.length} bills
-- Total Products in Catalog: ${inventory.length}
-- Currently Low-Stock Items: ${lowStockNames}
-Dashboard Navigation Guide:
-1. "Dashboard Reports": Shows KPI cards (Sales, Bills, Low-Stock count, Profit), Weekly Revenue chart, and one-click "+10 Restock" alerts.
-2. "Billing / POS Counter": Workers tap items to add to the cart, toggle 5% GST, pick UPI/Cash/Card, and click "Generate Bill & Deduct Stock" to create a printable receipt and auto-update inventory.
-3. "Digital Inventory": View all stock, click "+10 Stock" to replenish, or click "+ Add New Product" to add new items.
-Keep answers clear, structured with short bullet points, and easy for a new shop worker or project coordinator to understand.`;
-
+            const controller = new AbortController();
+            const timeout = setTimeout(() => controller.abort(), 25000);
             try {
-                const reply = await callGeminiWithBackoff(systemPrompt, query);
-                removeTypingIndicator();
-                appendChatMessage('bot', reply);
+                const response = await fetch('/api/ai/chat', {
+                    method: 'POST',
+                    credentials: 'same-origin',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ bot: 'staff', message: query }),
+                    signal: controller.signal
+                });
+                const data = await response.json().catch(() => ({}));
+                if (!response.ok) {
+                    if (response.status === 401) {
+                        throw new Error('Your session has expired. Please sign in again.');
+                    }
+                    const detail = typeof data.detail === 'string' ? data.detail : '';
+                    if (detail.includes('Assign a model')) {
+                        throw new Error('No model is assigned to the Staff Assistant. Open AI Model Studio and assign one.');
+                    }
+                    throw new Error(detail || 'AI backend returned HTTP ' + response.status);
+                }
+                if (typeof data.reply !== 'string' || !data.reply.trim()) {
+                    throw new Error('The AI backend returned an empty reply.');
+                }
+                appendChatMessage('bot', data.reply);
             } catch (err) {
+                const reason = err && err.name === 'AbortError'
+                    ? 'The AI request timed out after 25 seconds. Check your provider connection.'
+                    : (err && err.message ? err.message : 'Network request failed.');
+                appendChatMessage('bot', 'AI request failed: ' + reason);
+            } finally {
+                clearTimeout(timeout);
                 removeTypingIndicator();
-                const reason = err && err.message ? err.message : 'Provider unavailable';
-                if (reason.includes('Assign a model')) {
-                    appendChatMessage('bot', 'No model is assigned to this assistant yet. Open AI Model Studio to connect and assign a model.');
-                } else if (reason.includes('log in') || reason.includes('Session expired')) {
-                    appendChatMessage('bot', 'Your session expired. Sign in again to use AI chat.');
-                } else {
-                    const fallback = generateLocalSmartReply(query, todaySales, lowStockNames);
-                    appendChatMessage('bot', 'Live model unavailable — showing built-in help instead:\n' + fallback);
-                }
-            }
-        }
-
-        async function callGeminiWithBackoff(systemInstruction, userQuery) {
-            const apiKey = ""; // Runtime-provided key
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
-
-            const payload = {
-                contents: [{ parts: [{ text: userQuery }] }],
-                systemInstruction: { parts: [{ text: systemInstruction }] }
-            };
-
-            const delays = [1000, 2000, 4000];
-            for (let attempt = 0; attempt <= delays.length; attempt++) {
-                try {
-                    const response = await fetch(apiUrl, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload)
-                    });
-                    if (!response.ok) throw new Error('API Error');
-                    const data = await response.json();
-                    const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
-                    if (text) return text;
-                    throw new Error('Empty response');
-                } catch (error) {
-                    if (attempt === delays.length) throw error;
-                    await new Promise(res => setTimeout(res, delays[attempt]));
-                }
+                aiChatInFlight = false;
+                if (sendButton) sendButton.disabled = false;
             }
         }
 
