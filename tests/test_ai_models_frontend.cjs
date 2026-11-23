@@ -13,7 +13,11 @@ function mockForm(status, detail) {
     function element(id, value = '') {
         const classes = new Set(id === 'ai-save-error' ? ['hidden'] : []);
         return elements[id] = {
-            value, checked: false, textContent: '', disabled: false,
+            value, checked: false, textContent: '', disabled: false, children: [],
+            replaceChildren() { this.children = []; this.textContent = ''; },
+            appendChild(node) { this.children.push(node); },
+            setAttribute() {},
+            addEventListener(_name, fn) { this.onClick = fn; },
             classList: {
                 add(key) { classes.add(key); },
                 remove(key) { classes.delete(key); },
@@ -34,10 +38,16 @@ function mockForm(status, detail) {
     element('ai-endpoint-hint');
     element('ai-reset-endpoint');
     element('ai-key-note');
+    element('ai-discover-button');
+    element('ai-discover-note');
+    element('ai-discover-results');
     const sandbox = {
         URL,
         window: {},
-        document: { getElementById: id => elements[id] || null, addEventListener() {} },
+        document: { getElementById: id => elements[id] || null, addEventListener() {}, createElement: tag => ({
+            tagName: tag, textContent: '', className: '', type: '', onClick: null,
+            addEventListener(_name, fn) { this.onClick = fn; }
+        }) },
         fetch: async (url, options) => {
             if (url === '/api/ai/config') {
                 return { ok: true, status: 200, json: async () => ({
@@ -48,8 +58,10 @@ function mockForm(status, detail) {
                     }
                 }) };
             }
+            sandbox.lastRequest = url;
             sandbox.submitted = JSON.parse(options.body);
-            return { ok: false, status, json: async () => ({ detail }) };
+            return { ok: status >= 200 && status < 300, status,
+                json: async () => status >= 200 && status < 300 ? detail : ({ detail }) };
         }
     };
     vm.runInNewContext(script, sandbox, { filename: 'ai_models.js' });
@@ -136,4 +148,40 @@ test('changing providers locks preset endpoint and unlocks custom URL', async ()
     sandbox.window.aiProviderChanged();
     assert.equal(elements['ai-endpoint'].readOnly, false);
     assert.equal(elements['ai-protocol'].disabled, false);
+});
+
+test('fetch available models is an enabled, visibly styled button on new connections', () => {
+    assert.match(html, /id="ai-discover-button" type="button" onclick="aiDiscoverModels\(\)"/);
+    assert.match(html, /id="ai-discover-button"[^>]*class="[^"]*rounded-lg[^"]*bg-indigo-50/);
+    assert.ok(!html.includes('Save the connection first to fetch models.'));
+    assert.ok(!script.includes("byId('ai-discover-button').disabled = !model"));
+});
+
+test('discover models before saving sends key only to authenticated backend and fills model ID', async () => {
+    const { sandbox, elements, ready } = mockForm(200, {
+        models: ['oc/hy4-flash-free', 'oc/mimo-v2.6-flash-free']
+    });
+    await ready;
+    elements['ai-endpoint'].value = 'https://rn59vaz.abc-tunnel.us/v1';
+    await sandbox.window.aiDiscoverModels();
+    assert.equal(sandbox.lastRequest, '/api/ai/models/discover-preview');
+    assert.equal(sandbox.submitted.provider, 'custom');
+    assert.equal(sandbox.submitted.protocol, 'openai');
+    assert.equal(sandbox.submitted.endpoint, 'https://rn59vaz.abc-tunnel.us/v1');
+    assert.equal(sandbox.submitted.apiKey, 'secret-cannot-appear-in-errors');
+    assert.equal(elements['ai-discover-button'].disabled, false);
+    assert.match(elements['ai-discover-results'].children[0].textContent, /Found 2 models/);
+    elements['ai-discover-results'].children[1].onClick();
+    assert.equal(elements['ai-model-id'].value, 'oc/hy4-flash-free');
+});
+
+test('model catalog 403 displays diagnostic without leaking API key', async () => {
+    const { sandbox, elements, ready } = mockForm(502,
+        'AI provider HTTP 403: request forbidden. Check API key permissions.');
+    await ready;
+    await sandbox.window.aiDiscoverModels();
+    assert.equal(sandbox.lastRequest, '/api/ai/models/discover-preview');
+    assert.match(elements['ai-discover-results'].textContent, /HTTP 403/);
+    assert.doesNotMatch(elements['ai-discover-results'].textContent, /secret-cannot-appear/);
+    assert.equal(elements['ai-discover-button'].disabled, false);
 });

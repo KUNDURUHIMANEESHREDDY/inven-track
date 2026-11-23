@@ -208,9 +208,11 @@
             (model && model.provider === '9router' ?
                 'Get your 9Router gateway key under Dashboard → Settings → API Keys.' :
                 'A key is optional for endpoints that do not require authentication.');
-        byId('ai-discover-button').disabled = !model;
-        byId('ai-discover-button').classList.toggle('opacity-40', !model);
-        byId('ai-discover-note').classList.toggle('hidden', !!model);
+        byId('ai-discover-button').disabled = false;
+        byId('ai-discover-note').textContent = model
+            ? 'Uses the stored key; enter a new key here to preview changes.'
+            : 'Enter an endpoint and API key, then fetch without saving.';
+        byId('ai-discover-note').classList.remove('hidden');
         byId('ai-discover-results').classList.add('hidden');
         byId('ai-discover-results').replaceChildren();
         byId('ai-modal-title').textContent = model ? 'Edit AI connection' : 'Connect an AI model';
@@ -309,26 +311,61 @@
         } catch (err) { message('Connection failed: ' + err.message, 'warning'); }
     };
     window.aiDiscoverModels = async function() {
-        if (!editingId) return;
         const region = byId('ai-discover-results');
+        const button = byId('ai-discover-button');
+        if (button.disabled) return;
         region.classList.remove('hidden');
-        region.textContent = 'Loading models from provider...';
+        region.setAttribute('role', 'status');
+        region.textContent = 'Checking model catalog...';
+        button.disabled = true;
         try {
-            const result = await request('/api/ai/models/' + editingId + '/discover');
+            const provider = byId('ai-provider').value;
+            const selected = registry.providers[provider];
+            if (!selected) throw new Error('Choose an AI provider first.');
+            const protocol = provider === 'custom' ? byId('ai-protocol').value : selected.protocol;
+            const endpoint = provider === 'custom' ? cleanEndpoint(byId('ai-endpoint').value) : selected.endpoint;
+            const apiKey = byId('ai-api-key').value.trim();
+            const saved = registry.models.find(function(item) { return item.id === editingId; });
+            const sameSavedSettings = saved && !apiKey && !byId('ai-clear-key').checked &&
+                saved.provider === provider && saved.protocol === protocol && saved.endpoint === endpoint;
+            let result;
+            if (sameSavedSettings) {
+                result = await request('/api/ai/models/' + editingId + '/discover');
+            } else {
+                if (saved && !apiKey && saved.hasKey) {
+                    throw new Error('Enter your API key to preview changed settings, or save the changes first.');
+                }
+                result = await request('/api/ai/models/discover-preview', {
+                    method: 'POST',
+                    body: JSON.stringify({ provider: provider, protocol: protocol,
+                        endpoint: endpoint, apiKey: apiKey })
+                });
+            }
             region.replaceChildren();
-            if (!result.models.length) { region.textContent = 'No models returned. You can enter an ID manually.'; return; }
+            if (!Array.isArray(result.models) || !result.models.length) {
+                region.textContent = 'The provider returned no model IDs. Check the provider settings.';
+                return;
+            }
+            const summary = document.createElement('div');
+            summary.className = 'sticky top-0 bg-indigo-50 text-indigo-800 text-xs font-semibold px-3 py-2 border-b border-indigo-100';
+            summary.textContent = 'Found ' + result.models.length + ' models. Select one to fill in Model ID.';
+            region.appendChild(summary);
             result.models.forEach(function(name) {
-                const btn = document.createElement('button');
-                btn.type = 'button';
-                btn.className = 'block w-full text-left text-xs font-mono px-3 py-2.5 border-b border-slate-100 hover:bg-indigo-50 break-all';
-                btn.textContent = name;
-                btn.addEventListener('click', function() {
+                const item = document.createElement('button');
+                item.type = 'button';
+                item.className = 'block w-full text-left text-xs font-mono px-3 py-2.5 border-b border-slate-100 hover:bg-indigo-50 break-all';
+                item.textContent = name;
+                item.addEventListener('click', function() {
                     byId('ai-model-id').value = name;
                     region.classList.add('hidden');
                 });
-                region.appendChild(btn);
+                region.appendChild(item);
             });
-        } catch (err) { region.textContent = err.message; }
+        } catch (err) {
+            region.textContent = 'Could not fetch models: ' + err.message;
+        } finally {
+            button.disabled = false;
+        }
     };
     document.addEventListener('keydown', function(event) {
         if (event.key === 'Escape' && byId('ai-model-modal') && !byId('ai-model-modal').classList.contains('hidden')) {

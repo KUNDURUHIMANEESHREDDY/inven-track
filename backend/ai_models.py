@@ -204,6 +204,13 @@ class ModelInput(BaseModel):
         return checked_endpoint(value)
 
 
+class DiscoveryInput(ModelInput):
+    # Discovering a provider's model catalog does not require a connection name
+    # or a model ID; credentials are used for one request and never stored.
+    name: str = Field(default="Model discovery")
+    modelId: str = Field(default="discovery")
+
+
 class BotInput(BaseModel):
     modelId: int | None = None
     extraInstruction: str = Field(default="", max_length=2000)
@@ -439,24 +446,53 @@ def chat(payload: ChatInput, request: Request, owner=Depends(owner_dep)):
     return {"reply": answer_assistant(payload.message, owner, payload.bot)}
 
 
+def discover_provider_catalog(endpoint, protocol, api_key):
+    """List remote models without storing or returning the supplied credential."""
+    if protocol == "anthropic":
+        raise HTTPException(422, "Enter Anthropic model IDs manually for this integration")
+    endpoint = checked_endpoint(endpoint)
+    public_destination(endpoint)
+    url = endpoint + "/models"
+    public_destination(url)
+    headers = {}
+    if api_key:
+        headers = ({"x-goog-api-key": api_key} if protocol == "gemini"
+                   else {"Authorization": "Bearer " + api_key})
+    req = urllib.request.Request(url, headers=headers)
+    try:
+        with urllib.request.build_opener(NoRedirect()).open(req, timeout=10) as response:
+            data = json.loads(response.read(512_000))
+    except urllib.error.HTTPError as exc:
+        raise HTTPException(502, provider_http_error(exc.code, exc.read(4096))) from None
+    except (urllib.error.URLError, OSError, TimeoutError):
+        raise HTTPException(503, "Cannot reach provider model listing. Check the HTTPS tunnel and try again") from None
+    except (UnicodeDecodeError, ValueError):
+        raise HTTPException(502, "Provider model listing did not return valid JSON") from None
+    if not isinstance(data, dict):
+        raise HTTPException(502, "Provider model listing returned an unexpected format")
+    rows = data.get("data", data.get("models", []))
+    if not isinstance(rows, list):
+        raise HTTPException(502, "Provider model listing returned an unexpected format")
+    names = []
+    for item in rows:
+        if not isinstance(item, dict):
+            continue
+        name = item.get("id") or item.get("name")
+        if isinstance(name, str) and name:
+            names.append(name.removeprefix("models/") if protocol == "gemini" else name)
+    return {"models": sorted(set(names))[:1000]}
+
+
+@router.post("/models/discover-preview")
+def discover_unsaved_models(payload: DiscoveryInput, request: Request, owner=Depends(owner_dep)):
+    core().enforce_limit(request, "ai-discover", 20, 3600, str(owner["id"]))
+    return discover_provider_catalog(payload.endpoint, payload.protocol, payload.apiKey)
+
+
 @router.get("/models/{model_id}/discover")
 def discover_models(model_id: int, request: Request, owner=Depends(owner_dep)):
     core().enforce_limit(request, "ai-discover", 20, 3600, str(owner["id"]))
     with core().database() as db:
         model = get_model(db, owner["id"], model_id)
-    if model["protocol"] == "anthropic":
-        raise HTTPException(422, "Enter Anthropic model IDs manually for this integration")
-    endpoint = checked_endpoint(model["endpoint"])
-    public_destination(endpoint)
-    url = endpoint + "/models"
-    headers = ({"x-goog-api-key": decrypt_key(model["encrypted_key"])} if model["protocol"] == "gemini"
-               else {"Authorization": "Bearer " + decrypt_key(model["encrypted_key"])})
-    req = urllib.request.Request(url, headers=headers)
-    try:
-        with urllib.request.build_opener(NoRedirect()).open(req, timeout=10) as response:
-            data = json.loads(response.read(512_000))
-        names = [item.get("id") or item.get("name", "").removeprefix("models/")
-                 for item in data.get("data", data.get("models", []))]
-        return {"models": sorted(x for x in names if isinstance(x, str) and x)[:200]}
-    except (urllib.error.HTTPError, urllib.error.URLError, OSError, ValueError):
-        raise HTTPException(502, "Provider model listing unavailable; enter a model ID manually")
+    return discover_provider_catalog(model["endpoint"], model["protocol"],
+                                     decrypt_key(model["encrypted_key"]))

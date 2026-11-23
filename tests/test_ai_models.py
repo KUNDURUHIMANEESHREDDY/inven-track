@@ -285,3 +285,77 @@ def test_http_json_403_response_is_redacted_and_classified(monkeypatch):
     assert exc.value.status_code == 502
     assert "not allowed to use" in exc.value.detail
     assert secret not in exc.value.detail
+
+def test_preview_model_discovery_before_saving_uses_temporary_key(client, monkeypatch):
+    assert client.post("/api/ai/models/discover-preview", json={
+        "provider": "custom", "protocol": "openai",
+        "endpoint": "https://example.com/v1", "apiKey": "test-preview-secret"
+    }).status_code == 401
+    create_owner(client)
+    observed = {}
+
+    def fake_list(endpoint, protocol, key):
+        observed.update(endpoint=endpoint, protocol=protocol, key=key)
+        return {"models": ["oc/hy4-flash-free", "oc/mimo-v2.6-flash-free"]}
+
+    monkeypatch.setattr(ai_models, "discover_provider_catalog", fake_list)
+    response = client.post("/api/ai/models/discover-preview", json={
+        "provider": "custom", "protocol": "openai",
+        "endpoint": "https://example.com/v1", "apiKey": "test-preview-secret"
+    })
+    assert response.status_code == 200, response.text
+    assert response.json()["models"] == ["oc/hy4-flash-free", "oc/mimo-v2.6-flash-free"]
+    assert observed == {"endpoint": "https://example.com/v1",
+                        "protocol": "openai", "key": "test-preview-secret"}
+    assert "test-preview-secret" not in response.text
+    assert client.get("/api/ai/config").json()["models"] == []
+
+
+def test_discovery_preview_rejects_local_and_insecure_endpoints(client, monkeypatch):
+    create_owner(client)
+    for endpoint in ("http://127.0.0.1:20128/v1", "https://127.0.0.1/v1",
+                     "https://example.com/v1?api_key=test-secret"):
+        response = client.post("/api/ai/models/discover-preview", json={
+            "provider": "custom", "protocol": "openai",
+            "endpoint": endpoint, "apiKey": "test-secret"
+        })
+        assert response.status_code == 422, response.text
+        assert "test-secret" not in response.text
+
+
+def test_discovery_preview_uses_server_managed_provider_preset(client, monkeypatch):
+    create_owner(client)
+    seen = {}
+    def fake_list(endpoint, protocol, key):
+        seen.update(endpoint=endpoint, protocol=protocol, key=key)
+        return {"models": []}
+    monkeypatch.setattr(ai_models, "discover_provider_catalog", fake_list)
+    response = client.post("/api/ai/models/discover-preview", json={
+        "provider": "9router", "protocol": "anthropic",
+        "endpoint": "http://invalid.example/v1", "apiKey": "preview-test"
+    })
+    assert response.status_code == 200
+    assert seen == {"endpoint": "https://9router.com/v1",
+                    "protocol": "openai", "key": "preview-test"}
+
+
+def test_model_discovery_upstream_403_is_actionable_and_redacted(monkeypatch):
+    from io import BytesIO
+    import urllib.error
+    import urllib.request
+
+    class FakeOpener:
+        def open(self, request, timeout):
+            assert request.full_url == "https://example.com/v1/models"
+            assert request.headers["Authorization"] == "Bearer test-private-key"
+            raise urllib.error.HTTPError(
+                request.full_url, 403, "Forbidden", {},
+                BytesIO(b'{"error":{"message":"API key is not permitted to list models, secret=test-private-key"}}'))
+
+    monkeypatch.setattr(ai_models, "public_destination", lambda _: None)
+    monkeypatch.setattr(urllib.request, "build_opener", lambda *args: FakeOpener())
+    with pytest.raises(HTTPException) as exc:
+        ai_models.discover_provider_catalog("https://example.com/v1", "openai", "test-private-key")
+    assert exc.value.status_code == 502
+    assert "403" in exc.value.detail
+    assert "test-private-key" not in exc.value.detail
