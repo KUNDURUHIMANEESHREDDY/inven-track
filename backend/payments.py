@@ -23,6 +23,8 @@ PAYMENT_API = "https://api.razorpay.com/v1"
 
 
 def gateway_enabled() -> bool:
+    if os.getenv("INVENTRACK_DEMO_ONLY") == "1":
+        return False
     key = os.getenv("RAZORPAY_KEY_ID", "")
     secret = os.getenv("RAZORPAY_KEY_SECRET", "")
     if not key or not secret:

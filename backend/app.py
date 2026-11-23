@@ -463,11 +463,13 @@ def frontend_api():
 
 @app.get("/api/health")
 def health():
-    return {"status": "ok", "service": "VyaparFlow"}
+    return {"status": "ok", "service": "VyaparFlow", "demoOnly": os.getenv("INVENTRACK_DEMO_ONLY") == "1"}
 
 
 @app.post("/api/auth/register", status_code=201)
 def register(payload: Register, request: Request, response: Response):
+    if os.getenv("INVENTRACK_DEMO_ONLY") == "1":
+        raise HTTPException(403, "Public demo mode: registration is disabled")
     enforce_limit(request, "register", 8, 3600)
     with database() as con:
         try:
@@ -485,6 +487,8 @@ def register(payload: Register, request: Request, response: Response):
 
 @app.post("/api/auth/login")
 def login(payload: Login, request: Request, response: Response):
+    if os.getenv("INVENTRACK_DEMO_ONLY") == "1":
+        raise HTTPException(403, "Public demo mode: sign in using Demo Login")
     enforce_limit(request, "login-ip", 12, 600)
     enforce_limit(request, "login-email", 16, 3600, payload.email.strip()[:254])
     with database() as con:

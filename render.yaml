@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: inven-track-demo
+    runtime: docker
+    plan: free
+    healthCheckPath: /api/health
+    envVars:
+      - key: INVENTRACK_DEMO_ONLY
+        value: "1"
+      - key: RAZORPAY_MODE
+        value: test
+      - key: ENABLE_LIVE_PAYMENTS
+        value: "NO"
+      - key: INVENTRACK_TIMEZONE
+        value: Asia/Kolkata

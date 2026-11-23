@@ -236,3 +236,24 @@ def test_payment_cross_tenant_blocked(client, monkeypatch):
     assert client.post("/api/payments/orders/1").status_code == 404
     assert client.post("/api/payments/reconcile/1").status_code == 404
     assert client.get("/api/payments/status/1").status_code == 404
+
+
+def test_free_host_demo_mode_disables_real_accounts_and_payments(client, monkeypatch):
+    monkeypatch.setenv("INVENTRACK_DEMO_ONLY", "1")
+    monkeypatch.setenv("RAZORPAY_KEY_ID", "rzp_test_do_not_use")
+    monkeypatch.setenv("RAZORPAY_KEY_SECRET", "fake")
+    assert client.get("/api/health").json()["demoOnly"] is True
+    assert client.post("/api/auth/register", json={
+        "email": "test@example.com", "mobile": "1234567890",
+        "password": "StrongPass123!", "businessName": "Business"
+    }).status_code == 403
+    assert client.post("/api/auth/login", json={
+        "email": "test@example.com", "mobile": "1234567890",
+        "password": "StrongPass123!"
+    }).status_code == 403
+    assert client.post("/api/auth/demo").status_code == 200
+    assert client.get("/api/bootstrap").json()["gatewayEnabled"] is False
+    assert client.post("/api/invoices", json={
+        "items": [{"id": client.get("/api/products").json()[0]["id"], "qty": 1}],
+        "payment": "Online (Razorpay)"
+    }).status_code == 503
