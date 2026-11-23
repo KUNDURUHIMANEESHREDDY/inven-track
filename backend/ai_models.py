@@ -339,6 +339,39 @@ def provider_call(model, api_key, instruction, message):
         raise HTTPException(502, "Provider returned an unexpected or empty response")
 
 
+def provider_http_error(code, response_body=b""):
+    """Classify upstream HTTP failures without reflecting untrusted provider text.
+
+    Upstream responses may echo user prompts, authorization headers or API keys.
+    Only use the response internally to choose a safe, predefined explanation.
+    """
+    try:
+        data = json.loads(response_body[:4096])
+        err = data.get("error", data) if isinstance(data, dict) else {}
+        if isinstance(err, dict):
+            raw = " ".join(str(err.get(field, "")) for field in ("message", "type", "code"))
+        else:
+            raw = ""
+    except (UnicodeDecodeError, ValueError, TypeError):
+        raw = ""
+    summary = raw.lower()[:512]
+    if code == 401:
+        return "AI provider HTTP 401: API key missing, invalid or expired. Check your provider credentials."
+    if code == 403:
+        if any(x in summary for x in ("quota", "rate limit", "usage limit", "exhausted")):
+            return "AI provider HTTP 403: quota or usage limit denied this request. Check the provider dashboard."
+        if any(x in summary for x in ("not allowed", "not permitted", "model_not_allowed", "model_not_permitted")):
+            return "AI provider HTTP 403: this API key is not allowed to use the selected model. Choose an authorized model in the provider dashboard."
+        if any(x in summary for x in ("api key", "invalid key", "invalid token", "authentication")):
+            return "AI provider HTTP 403: access denied for this API key. Check the provider dashboard and key permissions."
+        return "AI provider HTTP 403: request forbidden. Check API key permissions, model availability, provider connection and quota."
+    if code == 404:
+        return "AI provider HTTP 404: model or API route not found. Verify your provider endpoint and model ID."
+    if code == 429:
+        return "AI provider HTTP 429: rate or usage limit reached. Check the provider quota and retry after reset."
+    return "AI provider returned HTTP " + str(code)
+
+
 def http_json(url, payload, headers):
     request = urllib.request.Request(url, method="POST", data=json.dumps(payload).encode("utf-8"),
                                      headers={"Content-Type": "application/json", **headers})
@@ -346,7 +379,8 @@ def http_json(url, payload, headers):
         with urllib.request.build_opener(NoRedirect()).open(request, timeout=15) as response:
             return json.loads(response.read(256_000))
     except urllib.error.HTTPError as exc:
-        raise HTTPException(502, "AI provider returned HTTP " + str(exc.code))
+        # Never display the provider's full response: it may contain credentials.
+        raise HTTPException(502, provider_http_error(exc.code, exc.read(4096)))
     except (urllib.error.URLError, TimeoutError, OSError, ValueError):
         raise HTTPException(503, "AI provider connection failed or timed out")
 

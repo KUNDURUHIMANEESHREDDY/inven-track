@@ -239,3 +239,49 @@ def test_builtin_provider_can_save_without_typing_endpoint(client):
     assert response.status_code == 201, response.text
     assert response.json()["endpoint"] == "https://api.openai.com/v1"
     assert response.json()["hasKey"] is True
+
+
+@pytest.mark.parametrize("code,body,expected", [
+    (403, b'{"error":{"message":"This API key is not allowed to use model oc/hy4-flash-free"}}', "not allowed to use"),
+    (403, b'{"error":{"code":"quota_exhausted","message":"quota exhausted"}}', "quota"),
+    (403, b'{"error":{"message":"invalid API key"}}', "access denied for this API key"),
+    (403, b'<html>blocked by edge</html>', "request forbidden"),
+    (401, b'{"error":{"message":"SECRET-KEY-IN-BODY"}}', "invalid or expired"),
+    (404, b'{}', "model or API route not found"),
+    (429, b'{}', "rate or usage limit"),
+])
+def test_provider_http_error_is_actionable_without_leaking_error_body(code, body, expected):
+    description = ai_models.provider_http_error(code, body)
+    assert expected in description
+    assert "SECRET-KEY-IN-BODY" not in description
+    assert "oc/hy4-flash-free" not in description
+
+
+def test_http_json_403_response_is_redacted_and_classified(monkeypatch):
+    from io import BytesIO
+    import urllib.error
+    import urllib.request
+
+    secret = "9r_PRIVATE_DO_NOT_ECHO"
+    response = (
+        '{"error":{"message":"This API key is not allowed to use model oc/hy4-flash-free",'
+        '"debug":"%s"}}' % secret
+    ).encode("utf-8")
+
+    class FakeOpener:
+        def open(self, request, timeout):
+            raise urllib.error.HTTPError(
+                request.full_url, 403, "Forbidden", {},
+                BytesIO(response),
+            )
+
+    monkeypatch.setattr(urllib.request, "build_opener", lambda *args: FakeOpener())
+    with pytest.raises(HTTPException) as exc:
+        ai_models.http_json(
+            "https://9router.com/v1/chat/completions",
+            {"model": "oc/hy4-flash-free", "messages": [{"role": "user", "content": "hi"}]},
+            {"Authorization": "Bearer " + secret},
+        )
+    assert exc.value.status_code == 502
+    assert "not allowed to use" in exc.value.detail
+    assert secret not in exc.value.detail
