@@ -177,3 +177,29 @@ def test_9router_preset_end_to_end_with_mock_gateway(client, monkeypatch):
     assert answer.status_code == 200, answer.text
     assert answer.json()["reply"] == "9Router mocked reply"
     assert "9r_FAKE_TEST_ONLY" not in client.get("/api/ai/config").text
+
+@pytest.mark.parametrize("endpoint, expected", [
+    ("https://9router.com/v1", "https://9router.com/v1"),
+    ("https://9router.com/v1/", "https://9router.com/v1"),
+    ("https://9router.com/v1/chat/completions", "https://9router.com/v1"),
+    ("https://9router.com/v1/chat/completions/", "https://9router.com/v1"),
+    ("https://api.openai.com/v1", "https://api.openai.com/v1"),
+])
+def test_endpoint_normalizes_common_api_urls(endpoint, expected):
+    assert ai_models.checked_endpoint(endpoint) == expected
+
+
+@pytest.mark.parametrize("endpoint, expected", [
+    ("http://9router.com/v1", "https://"),
+    ("https://9router.com/v1?key=secret", "?query"),
+    ("https://9router.com/v1#fragment", "?query"),
+    ("https://user:pass@9router.com/v1", "credentials"),
+    ("https://", "complete HTTPS"),
+])
+def test_endpoint_reports_actionable_error_without_echoing_secrets(endpoint, expected):
+    with pytest.raises(HTTPException) as exc:
+        ai_models.checked_endpoint(endpoint)
+    assert exc.value.status_code == 422
+    assert expected in str(exc.value.detail)
+    assert "secret" not in str(exc.value.detail)
+    assert "user:pass" not in str(exc.value.detail)

@@ -32,6 +32,7 @@ function mockForm(status, detail) {
     element('ai-save-model');
     element('ai-save-error');
     const sandbox = {
+        URL,
         window: {},
         document: { getElementById: id => elements[id] || null, addEventListener() {} },
         fetch: async (_url, options) => {
@@ -66,4 +67,29 @@ test('server failures remain visible without exposing API keys', async () => {
 test('modal and toast error containers appear above the content', () => {
     assert.match(html, /id="ai-save-error" role="alert"/);
     assert.ok(html.includes('id="toast-container" class="fixed top-20 right-5 z-[90]'));
+});
+
+test('pasted OpenAI-compatible chat route is converted to base URL', async () => {
+    const { sandbox, elements } = mockForm(500, []);
+    elements['ai-endpoint'].value = 'https://9router.com/v1/chat/completions/';
+    await sandbox.window.aiSaveModel({ preventDefault() {} });
+    assert.equal(sandbox.submitted.endpoint, 'https://9router.com/v1');
+    assert.equal(elements['ai-endpoint'].value, 'https://9router.com/v1');
+});
+
+test('query-string credentials are rejected without sending the URL to the backend', async () => {
+    const { sandbox, elements } = mockForm(500, []);
+    elements['ai-endpoint'].value = 'https://api.example.com/v1?key=SECRETQUERY';
+    await sandbox.window.aiSaveModel({ preventDefault() {} });
+    assert.equal(sandbox.submitted, undefined);
+    assert.match(elements['ai-save-error'].textContent, /remove the \?query/);
+    assert.doesNotMatch(elements['ai-save-error'].textContent, /SECRETQUERY/);
+});
+
+test('non-HTTPS endpoint is blocked before saving', async () => {
+    const { sandbox, elements } = mockForm(500, []);
+    elements['ai-endpoint'].value = 'http://example.com/v1';
+    await sandbox.window.aiSaveModel({ preventDefault() {} });
+    assert.equal(sandbox.submitted, undefined);
+    assert.match(elements['ai-save-error'].textContent, /use https:\/\//);
 });

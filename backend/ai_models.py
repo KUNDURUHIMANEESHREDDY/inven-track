@@ -118,11 +118,28 @@ def model_public(row):
 
 
 def checked_endpoint(endpoint):
-    url = urllib.parse.urlsplit(endpoint.strip().rstrip("/"))
-    if (url.scheme != "https" or not url.hostname or url.username or url.password
-            or url.query or url.fragment or not url.netloc or len(endpoint) > 500):
-        raise HTTPException(422, "Endpoint must be a valid HTTPS base URL without credentials or query parameters")
-    return endpoint.strip().rstrip("/")
+    """Validate the public HTTPS API base URL and normalize common pasted chat routes."""
+    value = endpoint.strip().rstrip("/")
+    try:
+        url = urllib.parse.urlsplit(value)
+        hostname = url.hostname
+        port = url.port
+    except ValueError:
+        raise HTTPException(422, "Enter a valid HTTPS API base URL, such as https://9router.com/v1")
+    if url.scheme != "https":
+        raise HTTPException(422, "The endpoint must start with https:// (for 9Router use https://9router.com/v1)")
+    if not hostname or not url.netloc or (port is not None and port < 1):
+        raise HTTPException(422, "Enter a complete HTTPS API base URL, such as https://9router.com/v1")
+    if url.username is not None or url.password is not None:
+        raise HTTPException(422, "Remove credentials from the endpoint URL. Enter your API key in the API key field.")
+    if "?" in value or "#" in value:
+        raise HTTPException(422, "Remove the ?query or #fragment from the endpoint URL. Enter your API key separately.")
+    if len(value) > 500 or any(c.isspace() for c in value):
+        raise HTTPException(422, "The endpoint URL must not contain spaces or exceed 500 characters")
+    path = url.path
+    if path.endswith("/chat/completions"):
+        path = path[:-len("/chat/completions")]
+    return urllib.parse.urlunsplit(("https", url.netloc, path.rstrip("/"), "", ""))
 
 
 def public_destination(url):

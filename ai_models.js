@@ -26,6 +26,44 @@
         banner.classList.toggle('hidden', !msg);
     }
     function refreshIcons() { if (window.lucide) window.lucide.createIcons(); }
+    function cleanEndpoint(input) {
+        const value = String(input || '').trim();
+        let url;
+        try { url = new URL(value); }
+        catch (_) { throw new Error('Base endpoint: enter an HTTPS URL, e.g. https://9router.com/v1'); }
+        if (url.protocol !== 'https:') {
+            throw new Error('Base endpoint: use https://, not http://');
+        }
+        if (!url.hostname || url.username || url.password) {
+            throw new Error('Base endpoint: remove username/password from the URL; put the API key in its own field.');
+        }
+        if (value.includes('?') || value.includes('#')) {
+            throw new Error('Base endpoint: remove the ?query or #fragment. Put the API key in the separate field.');
+        }
+        if (value.split('').some(c => c.trim() === '')) {
+            throw new Error('Base endpoint: remove spaces and line breaks from the URL.');
+        }
+        const path = url.pathname.replace(new RegExp('/+$'), '');
+        const basePath = path.endsWith('/chat/completions')
+            ? path.slice(0, -'/chat/completions'.length) : path;
+        return url.origin + basePath;
+    }
+    function endpointHint() {
+        const provider = registry.providers[byId('ai-provider').value];
+        const preset = provider && provider.endpoint;
+        const hint = byId('ai-endpoint-hint');
+        const reset = byId('ai-reset-endpoint');
+        if (hint) hint.textContent = preset
+            ? 'Use the API base URL only: ' + preset + '. Do not include ?keys or /chat/completions.'
+            : 'HTTPS API base URL only. Do not include ?keys or /chat/completions.';
+        if (reset) reset.classList.toggle('hidden', !preset);
+    }
+    window.aiResetEndpoint = function() {
+        const provider = registry.providers[byId('ai-provider').value];
+        if (!provider || !provider.endpoint) return;
+        byId('ai-endpoint').value = provider.endpoint;
+        showSaveError('');
+    };
     async function request(url, init) {
         const response = await fetch(url, Object.assign({
             credentials: 'same-origin',
@@ -151,6 +189,7 @@
         byId('ai-protocol').value = model ? model.protocol : 'openai';
         byId('ai-endpoint').value = model ? model.endpoint : registry.providers.openai.endpoint;
         byId('ai-model-id').value = model ? model.modelId : registry.providers.openai.model;
+        endpointHint();
         byId('ai-api-key').value = '';
         byId('ai-api-key').type = 'password';
         byId('ai-clear-key').checked = false;
@@ -178,6 +217,7 @@
         byId('ai-protocol').value = p.protocol;
         byId('ai-endpoint').value = p.endpoint || '';
         byId('ai-model-id').value = p.model || '';
+        endpointHint();
         byId('ai-key-note').textContent = p.label === '9Router' ?
             'Get your 9Router gateway key in Dashboard → Settings → API Keys. Cloud endpoint availability may vary.' :
             'A key is optional for endpoints that do not require authentication.';
@@ -209,6 +249,8 @@
         };
         btn.disabled = true; btn.classList.add('opacity-60');
         try {
+            payload.endpoint = cleanEndpoint(payload.endpoint);
+            byId('ai-endpoint').value = payload.endpoint;
             await request(id ? '/api/ai/models/' + id : '/api/ai/models', {
                 method: id ? 'PUT' : 'POST', body: JSON.stringify(payload)
             });
