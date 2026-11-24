@@ -477,6 +477,16 @@ def ai_frontend_script():
     return FileResponse(ROOT / "ai_models.js", media_type="application/javascript")
 
 
+@app.get("/neon-signup")
+def neon_signup_page():
+    return FileResponse(ROOT / "neon_signup.html")
+
+
+@app.get("/neon_auth_bundle.js")
+def neon_signup_bundle():
+    return FileResponse(ROOT / "neon_auth_bundle.js", media_type="application/javascript")
+
+
 @app.get("/api/health")
 def health():
     return {"status": "ok", "service": "VyaparFlow", "demoOnly": os.getenv("INVENTRACK_DEMO_ONLY") == "1", "database": "postgresql" if os.getenv("DATABASE_URL") else "sqlite-ephemeral"}

@@ -24,6 +24,36 @@ Tests: py -m pytest -q tests
 
 See DEPLOYMENT.md for setup and limitations. Do not place API keys into the frontend or commit backup keys, .env or databases.
 
+## Neon-managed email authentication
+
+This project now includes a separate Neon Better Auth sign-up/sign-in screen at
+`/neon-signup`, reachable from the main login form. It uses the official
+`@neon/auth` client SDK, creates email/password accounts, reads the active
+managed session via `getSession()`, and supports sign-out. The dedicated screen
+is intentionally separate from the older FastAPI owner login: it does **not**
+grant access to inventory, invoices or the original owner session cookie.
+Existing business accounts and login continue working unchanged.
+
+The Neon CLI links to project `wild-snow-59431122`, branch `main` and
+`neon.ts` declares `auth: true`. The public Auth URL was validated from
+Neon's branch configuration; do not place secret tokens or database passwords
+in browser assets. The CLI wrote branch Auth env values to ignored `.env.local`.
+
+To rebuild the checked-in browser asset after editing `neon_auth_frontend.js`:
+```bash
+npm install
+npm run build:auth
+py -m pytest -q tests/test_neon_signup.py
+```
+
+To try it locally, run the existing FastAPI server and open
+`http://localhost:8000/neon-signup`. Neon Auth currently allows localhost.
+Before production use, register the **verified** deployed app origin in Neon
+Auth trusted domains, enable email verification with deliverable email, validate
+full sign-up/sign-in/session/sign-out in-browser, and integrate a server-side
+verified Neon identity into the inventory owner's authorization model. A Neon
+Auth session alone is not an Inventrack owner session.
+
 ## AI Model Studio
 Log in and select **AI Model Studio** in the sidebar. Click **Connect new model**, choose OpenAI, Gemini, Anthropic, OpenRouter, Groq, Together or a custom HTTPS endpoint, enter the model ID and optional API key, then save. **Test** uses a real provider request and may consume credits. Assign a model and optional instructions separately to Staff Assistant, Sales Analyst and Inventory Guide. The chat widget lets you switch bots.
 

@@ -4,7 +4,7 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 COPY backend ./backend
-COPY api.js ai_models.js digital_inventory_and_sales_management_system.html ./
+COPY api.js ai_models.js digital_inventory_and_sales_management_system.html neon_signup.html neon_auth_bundle.js ./
 RUN useradd --uid 10001 --create-home inven && mkdir -p /data /backups && chown -R 10001:10001 /data /backups /app
 USER 10001
 EXPOSE 8000

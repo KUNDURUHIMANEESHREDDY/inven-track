@@ -1,4 +1,5 @@
 __pycache__/
+node_modules/
 .pytest_cache/
 .venv/
 *.py[cod]
@@ -24,3 +25,5 @@ scripts/plan_check.graphql
 *.vfpga
 *.dump
 *.sql
+node_modules/
+.neon

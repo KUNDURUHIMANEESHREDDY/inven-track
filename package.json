@@ -1,0 +1,11 @@
+{
+  "dependencies": {
+    "@neon/auth": "^0.8.2",
+    "@neon/config": "^1.14.6",
+    "@neon/env": "^2.1.9",
+    "esbuild": "^0.28.2"
+  },
+  "scripts": {
+    "build:auth": "esbuild neon_auth_frontend.js --bundle --format=iife --platform=browser --target=es2022 --outfile=neon_auth_bundle.js --minify"
+  }
+}

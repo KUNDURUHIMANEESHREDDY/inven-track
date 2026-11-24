@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Inventrack | Neon Auth</title>
+  <style>
+    :root{font-family:Inter,ui-sans-serif,system-ui,sans-serif;color:#17223b;background:#f3f6fc}
+    *{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;padding:24px}
+    main{background:#fff;border:1px solid #e1e6f1;border-radius:22px;box-shadow:0 18px 48px #283e6d15;padding:32px;width:min(100%,470px)}
+    a{color:#4f46e5;text-decoration:none;font-weight:600}h1{margin:10px 0 8px;font-size:27px}p{line-height:1.6;color:#657086;font-size:14px}
+    .brand{font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#4f46e5}
+    .tabs{display:grid;grid-template-columns:1fr 1fr;background:#f0f2f8;border-radius:12px;padding:4px;margin:24px 0}
+    .tabs button{border:0;background:transparent;border-radius:9px;color:#475569;padding:12px;cursor:pointer;font-weight:700}
+    .tabs button[aria-selected="true"]{background:white;color:#4f46e5;box-shadow:0 2px 8px #0f172a14}
+    label{display:block;font-size:13px;font-weight:700;margin:14px 0 7px}input{width:100%;border:1px solid #cbd5e1;padding:13px;border-radius:10px;font-size:15px}
+    input:focus{outline:3px solid #c7d2fe;border-color:#6366f1}
+    .primary{background:#4f46e5;color:white;border:0;padding:14px;border-radius:10px;font-weight:750;width:100%;margin-top:23px;cursor:pointer}
+    .primary:disabled{opacity:.6;cursor:wait}
+    .secondary{border:1px solid #cbd5e1;background:white;color:#344256;padding:10px 13px;border-radius:10px;cursor:pointer;font-weight:650}
+    .notice{background:#eef2ff;color:#3730a3;padding:12px;margin-top:15px;border-radius:10px;font-size:13px;overflow-wrap:anywhere}
+    .notice.error{background:#fff1f2;color:#9f1239}footer{border-top:1px solid #e5e7eb;margin-top:24px;padding-top:20px}
+    #current-user{font-size:13px;line-height:1.6;overflow-wrap:anywhere;margin:8px 0 14px}
+    .actions{display:flex;flex-wrap:wrap;gap:8px}small{font-size:12px;color:#657086}
+  </style>
+</head>
+<body>
+  <main>
+    <a href="/">← Back to Inventrack</a>
+    <div class="brand" style="margin-top:22px">Managed identity · Neon</div>
+    <h1>Create your account</h1>
+    <p>Email-and-password accounts are secured by Neon's managed Better Auth. Your current login is checked below.</p>
+    <div class="tabs" role="tablist" aria-label="Authentication mode">
+      <button id="mode-signup" aria-selected="true" type="button">Sign up</button>
+      <button id="mode-signin" aria-selected="false" type="button">Sign in</button>
+    </div>
+    <form id="neon-auth-form">
+      <div id="full-name-wrap"><label for="full-name">Name</label><input id="full-name" autocomplete="name" minlength="2" required placeholder="Your name"></div>
+      <label for="email">Email</label><input id="email" type="email" autocomplete="email" required placeholder="you@example.com">
+      <label for="password">Password</label><input id="password" type="password" minlength="8" autocomplete="new-password" required placeholder="8 characters or longer">
+      <button id="neon-submit" class="primary" type="submit">Create account</button>
+    </form>
+    <div id="neon-status" class="notice" role="status" aria-live="polite" hidden></div>
+    <footer>
+      <strong style="font-size:14px">Current Neon user</strong>
+      <div id="current-user" aria-live="polite">Checking session...</div>
+      <div class="actions">
+        <button class="secondary" id="check-session" type="button">Read current user</button>
+        <button class="secondary" id="signout" type="button" hidden>Sign out</button>
+      </div>
+      <p><small>Existing Inventrack owner accounts still use the original login on the main page.</small></p>
+    </footer>
+  </main>
+  <script defer src="/neon_auth_bundle.js"></script>
+</body>
+</html>
