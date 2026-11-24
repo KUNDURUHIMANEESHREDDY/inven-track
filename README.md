@@ -1,4 +1,4 @@
-# VyaparFlow / Inven Track
+# InvenTrack
 
 Python 3.11 FastAPI + SQLite backend for the existing HTML inventory and billing frontend.
 

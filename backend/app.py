@@ -1,4 +1,4 @@
-"""VyaparFlow inventory and billing API (Python 3.11+, FastAPI + SQLite)."""
+"""InvenTrack inventory and billing API (Python 3.11+, FastAPI + SQLite)."""
 from __future__ import annotations
 
 import hashlib
@@ -146,7 +146,7 @@ async def lifespan(_: FastAPI):
     yield
 
 
-app = FastAPI(title="VyaparFlow API", version="1.0.0", lifespan=lifespan)
+app = FastAPI(title="InvenTrack API", version="1.0.0", lifespan=lifespan)
 
 
 @app.middleware("http")
@@ -489,7 +489,7 @@ def neon_signup_bundle():
 
 @app.get("/api/health")
 def health():
-    return {"status": "ok", "service": "VyaparFlow", "demoOnly": os.getenv("INVENTRACK_DEMO_ONLY") == "1", "database": "postgresql" if os.getenv("DATABASE_URL") else "sqlite-ephemeral"}
+    return {"status": "ok", "service": "InvenTrack", "demoOnly": os.getenv("INVENTRACK_DEMO_ONLY") == "1", "database": "postgresql" if os.getenv("DATABASE_URL") else "sqlite-ephemeral"}
 
 
 @app.post("/api/auth/register", status_code=201)

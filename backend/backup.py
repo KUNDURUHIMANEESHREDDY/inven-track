@@ -103,7 +103,7 @@ def restore_database(backup: Path, destination: Path, overwrite: bool = False) -
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Encrypted, consistent VyaparFlow backups")
+    parser = argparse.ArgumentParser(description="Encrypted, consistent InvenTrack backups")
     sub = parser.add_subparsers(dest="command", required=True)
     sub.add_parser("generate-key", help="Print new Fernet key; store outside your repository")
     create = sub.add_parser("create")

@@ -1,4 +1,4 @@
-# VyaparFlow deployment and operations
+# InvenTrack deployment and operations
 
 ## Current verified state
 - FastAPI/SQLite backend, frontend integration, cost accounting, rate limiting, payment flow and backups are implemented.

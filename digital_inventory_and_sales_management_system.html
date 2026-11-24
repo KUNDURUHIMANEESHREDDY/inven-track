@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VyaparFlow — Digital Inventory & Sales Management System</title>
+    <title>InvenTrack — Digital Inventory & Sales Management System</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts: Inter & Plus Jakarta Sans -->
@@ -77,7 +77,7 @@
                         <i data-lucide="store" class="w-6 h-6 text-white"></i>
                     </div>
                     <div>
-                        <h1 class="font-display text-2xl font-extrabold tracking-tight text-white">VyaparFlow</h1>
+                        <h1 class="font-display text-2xl font-extrabold tracking-tight text-white">InvenTrack</h1>
                         <p class="text-xs text-slate-400">Digital Inventory & Sales Management</p>
                     </div>
                 </div>
@@ -265,8 +265,8 @@
                             <i data-lucide="store" class="w-5 h-5"></i>
                         </div>
                         <div>
-                            <span class="font-display font-bold text-white text-base block leading-none">VyaparFlow</span>
-                            <span class="text-[10px] text-indigo-400 font-semibold uppercase tracking-wider mt-1 block">Sales & Stock OS</span>
+                            <span class="font-display font-bold text-white text-base block leading-none">InvenTrack</span>
+                            <span class="text-[10px] text-indigo-400 font-semibold uppercase tracking-wider mt-1 block">Inventory & Sales OS</span>
                         </div>
                     </div>
                     <button onclick="toggleMobileSidebar()" class="lg:hidden text-slate-400 hover:text-white p-1">
@@ -985,7 +985,7 @@
                         <i data-lucide="bot" class="w-5 h-5 text-amber-300"></i>
                     </div>
                     <div>
-                        <h4 class="font-display font-bold text-sm leading-tight">VyaparAI Assistant</h4>
+                        <h4 class="font-display font-bold text-sm leading-tight">InvenTrack AI Assistant</h4>
                         <p class="text-[11px] text-indigo-200 flex items-center gap-1">
                             <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
                             Worker Training & Store Help
@@ -1015,7 +1015,7 @@
                         <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
                     </div>
                     <div class="bg-white border border-slate-200/80 rounded-2xl rounded-tl-none p-3 text-slate-700 shadow-2xs leading-relaxed">
-                        Namaste! 👋 I am your <strong>VyaparAI Assistant</strong>. Whether you are a new counter worker learning the system or the business owner checking reports, ask me anything!<br><br>
+                        Namaste! 👋 I am your <strong>InvenTrack AI Assistant</strong>. Whether you are a new counter worker learning the system or the business owner checking reports, ask me anything!<br><br>
                         Try tapping a quick question below or type your own.
                     </div>
                 </div>
@@ -1805,7 +1805,7 @@
                     <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
                 </div>
                 <div class="bg-white border border-slate-200 rounded-2xl rounded-tl-none px-3.5 py-2.5 text-slate-400 text-xs animate-pulse-subtle">
-                    VyaparAI is thinking...
+                    InvenTrack AI is thinking...
                 </div>
             `;
             container.appendChild(el);
@@ -1892,7 +1892,7 @@
             if (q.includes('summary') || q.includes('sales') || q.includes('report')) {
                 return `📊 **Live Store Summary:**\n• **Today's Revenue:** ${formatINR(todaySales)} (${bills.length} bills generated)\n• **Catalog Size:** ${inventory.length} active items\n• **Attention Needed (Low Stock):** ${lowStockNames}`;
             }
-            return `I can help you operate **VyaparFlow**! You can:\n• Click **Billing / POS Counter** to create customer bills & auto-deduct stock.\n• Click **Digital Inventory** to add new items or restock low inventory.\n• View **Dashboard Reports** to track daily ₹ sales and weekly trends.`;
+            return `I can help you operate **InvenTrack**! You can:\n• Click **Billing / POS Counter** to create customer bills & auto-deduct stock.\n• Click **Digital Inventory** to add new items or restock low inventory.\n• View **Dashboard Reports** to track daily ₹ sales and weekly trends.`;
         }
 
         function escapeHtml(str) {

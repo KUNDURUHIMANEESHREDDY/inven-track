@@ -1,4 +1,4 @@
-/* AI Model Studio for VyaparFlow. Secrets never enter client-side storage. */
+/* AI Model Studio for InvenTrack. Secrets never enter client-side storage. */
 (function () {
     'use strict';
     let registry = { models: [], bots: [], providers: {} };

@@ -1,4 +1,4 @@
-/* VyaparFlow live API adapter: replaces in-browser demo mutations. */
+/* InvenTrack live API adapter: replaces in-browser demo mutations. */
 (() => {
     'use strict';
     let liveDashboard = null;
