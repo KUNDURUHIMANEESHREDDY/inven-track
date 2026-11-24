@@ -138,3 +138,28 @@ def test_frontend_and_health(client):
 def test_csrf_origin_rejected(client):
     response = client.post("/api/auth/demo", headers={"Origin": "https://outside.example"})
     assert response.status_code == 403
+
+
+@pytest.mark.parametrize("identifier", ["OWNER@example.com", "9876543210", "+91 98765-43210"])
+def test_login_with_either_identifier(client, identifier):
+    owner = account(client)["owner"]
+    saved = product(client)
+    client.post("/api/auth/logout")
+    response = client.post("/api/auth/login", json={"identifier": identifier, "password": "StrongPass123!"})
+    assert response.status_code == 200, response.text
+    assert response.json()["owner"]["id"] == owner["id"]
+    assert client.get("/api/products").json()[0]["id"] == saved["id"]
+
+
+def test_mobile_login_ambiguous_and_bad_password(client):
+    account(client)
+    client.post("/api/auth/logout")
+    account(client, "other@example.com")
+    client.post("/api/auth/logout")
+    for identifier, password in [("9876543210", "StrongPass123!"), ("owner@example.com", "wrong"), ("+1 9876543210", "StrongPass123!")]:
+        response = client.post("/api/auth/login", json={"identifier": identifier, "password": password})
+        assert response.status_code == 401
+        assert client.get("/api/session").status_code == 401
+    response = client.post("/api/auth/login", json={"identifier": "owner@example.com", "password": "StrongPass123!"})
+    assert response.status_code == 200
+    assert response.json()["owner"]["email"] == "owner@example.com"

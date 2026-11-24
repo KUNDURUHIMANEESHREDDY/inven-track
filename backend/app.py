@@ -280,9 +280,17 @@ class Register(BaseModel):
 
 
 class Login(BaseModel):
-    email: str
-    mobile: str
-    password: str
+    identifier: str | None = Field(default=None, max_length=254)
+    email: str | None = Field(default=None, max_length=254)
+    mobile: str | None = Field(default=None, max_length=32)
+    password: str = Field(min_length=1, max_length=128)
+
+
+def normalize_login_mobile(value: str) -> str:
+    value = re.sub(r"[\s-]", "", value)
+    if value.startswith("+91"):
+        value = value[3:]
+    return value if re.fullmatch(r"[0-9]{10}", value) else ""
 
 
 class ProductIn(BaseModel):
@@ -516,12 +524,31 @@ def login(payload: Login, request: Request, response: Response):
     if os.getenv("INVENTRACK_DEMO_ONLY") == "1":
         raise HTTPException(403, "Public demo mode: sign in using Demo Login")
     enforce_limit(request, "login-ip", 12, 600)
-    enforce_limit(request, "login-email", 16, 3600, payload.email.strip()[:254])
+    email = (payload.email or "").strip().lower()
+    mobile = normalize_login_mobile(payload.mobile or "")
+    identifier = (payload.identifier or "").strip()
+    if identifier:
+        if email or payload.mobile:
+            raise HTTPException(400, "Use one login method")
+        if "@" in identifier:
+            email = identifier.lower()
+        else:
+            mobile = normalize_login_mobile(identifier)
+    if (payload.mobile and not mobile) or (email and not re.fullmatch(r"[^@\s]+@[^@\s]+\.[^@\s]+", email)) or not (email or mobile):
+        raise HTTPException(401, "Invalid login details")
+    enforce_limit(request, "login-identity", 16, 3600, email or mobile)
     with database() as con:
-        row = con.execute("SELECT * FROM owners WHERE email=? AND mobile=? AND is_demo=0",
-                          (payload.email.strip().lower(), payload.mobile.strip())).fetchone()
+        if email and mobile:
+            rows = con.execute("SELECT * FROM owners WHERE email=? AND mobile=? AND is_demo=0",
+                               (email, mobile)).fetchall()
+        elif email:
+            rows = con.execute("SELECT * FROM owners WHERE email=? AND is_demo=0", (email,)).fetchall()
+        else:
+            # Legacy businesses can share numbers; never guess which account to open.
+            rows = con.execute("SELECT * FROM owners WHERE mobile=? AND is_demo=0 LIMIT 2", (mobile,)).fetchall()
+        row = rows[0] if len(rows) == 1 else None
         if not row or not verify_password(payload.password, row["password_hash"]):
-            raise HTTPException(401, "Invalid login details")
+            raise HTTPException(401, "Invalid login details. If you share a mobile number, use your email.")
         set_session(con, row["id"], response, request)
         return {"owner": owner_json(row)}
 

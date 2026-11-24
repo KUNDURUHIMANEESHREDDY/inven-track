@@ -24,6 +24,10 @@ Tests: py -m pytest -q tests
 
 See DEPLOYMENT.md for setup and limitations. Do not place API keys into the frontend or commit backup keys, .env or databases.
 
+## Owner login
+
+Sign in to your existing business using your registered email address or Indian mobile number and password. Shared mobile numbers require email login. Registration still requires both contact fields. This is password authentication, not SMS or email OTP verification.
+
 ## Neon-managed email authentication
 
 This project now includes a separate Neon Better Auth sign-up/sign-in screen at

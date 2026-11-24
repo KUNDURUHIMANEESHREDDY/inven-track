@@ -56,12 +56,17 @@
         event.preventDefault();
         const email = document.getElementById('input-email').value.trim();
         const mobile = document.getElementById('input-mobile').value.trim();
+        const identifier = document.getElementById('input-identifier').value.trim();
         const password = document.getElementById('input-password').value;
         const businessName = document.getElementById('input-biz-name').value.trim();
         const selectedType = document.querySelector('input[name="bizType"]:checked');
         document.getElementById('auth-error').classList.add('hidden');
-        if (!email || !/^[0-9]{10}$/.test(mobile) || !password) {
+        if (authMode === 'signup' && (!email || !/^[0-9]{10}$/.test(mobile) || !password)) {
             authError('Enter a valid email, 10-digit mobile number, and password.');
+            return;
+        }
+        if (authMode === 'login' && (!identifier || !password)) {
+            authError('Enter your registered email or mobile number and password.');
             return;
         }
         if (authMode === 'signup' && (!businessName || password.length < 8)) {
@@ -71,7 +76,7 @@
         try {
             const payload = authMode === 'signup'
                 ? { email, mobile, password, businessName, businessType: selectedType?.value || 'Supermart' }
-                : { email, mobile, password };
+                : { identifier, password };
             const route = authMode === 'signup' ? '/api/auth/register' : '/api/auth/login';
             const result = await api(route, { method: 'POST', body: JSON.stringify(payload) });
             currentOwner = result.owner;
