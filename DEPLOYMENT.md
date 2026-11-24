@@ -1,5 +1,20 @@
 # InvenTrack deployment and operations
 
+## Local development on Windows
+
+Double-click `run_backend.bat`, or install dependencies and start the backend from the repository root:
+
+```powershell
+py -m pip install -r requirements.txt
+py -m uvicorn backend.app:app --host 127.0.0.1 --port 8000
+```
+
+Open http://127.0.0.1:8000. API documentation is available at http://127.0.0.1:8000/docs.
+
+Run tests with `py -m pytest -q tests`.
+
+Never commit API keys, backup keys, `.env` files or databases.
+
 ## Current verified state
 - FastAPI/SQLite backend, frontend integration, cost accounting, rate limiting, payment flow and backups are implemented.
 - Local tests use mocked gateway calls, NOT real Razorpay transactions.

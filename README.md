@@ -14,7 +14,7 @@ InvenTrack brings inventory management, billing, sales analytics and configurabl
 | Billing and sales | Server-calculated invoices, optional 5% GST, checkout stock validation and atomic stock deductions |
 | Business insights | Sales and gross-profit tracking with immutable invoice cost snapshots |
 | AI Model Studio | Configurable AI providers, model discovery, provider testing and dedicated Staff Assistant, Sales Analyst and Inventory Guide bots |
-| Accounts | Per-business owner login using registered email or Indian mobile number and password, sessions and tenant isolation |
+| Accounts | Per-business owner login using email or Indian mobile verification codes when delivery is configured, sessions and tenant isolation |
 | Payments | Optional Razorpay checkout with signature, captured-payment and webhook verification |
 | Persistence | SQLite for local development; PostgreSQL support for persistent cloud deployments |
 | Security and recovery | Encrypted AI credentials, rate limiting, security headers and encrypted backup tooling |
@@ -31,17 +31,6 @@ InvenTrack brings inventory management, billing, sales analytics and configurabl
 The backend handles tenant authorization, invoice calculations, stock transactions and provider requests. Database credentials and provider encryption keys belong in server-side environment configuration, never in frontend source or Git.
 
 The hosted link is a demo. Production persistence, payment enablement, backup restoration and managed-auth integration must be validated for the actual deployment.
-
-## Start on Windows
-Double-click run_backend.bat, or run:
-1. py -m pip install -r requirements.txt
-2. py -m uvicorn backend.app:app --host 127.0.0.1 --port 8000
-3. Open http://127.0.0.1:8000
-
-API docs: http://127.0.0.1:8000/docs
-Tests: py -m pytest -q tests
-
-See DEPLOYMENT.md for setup and limitations. Do not place API keys into the frontend or commit backup keys, .env or databases.
 
 ## Owner login
 
@@ -83,3 +72,7 @@ Log in and select **AI Model Studio** in the sidebar. Click **Connect new model*
 Provider credentials are encrypted using INVENTRACK_AI_KEY (Fernet) before storage. For local SQLite development, if the variable is absent, a private .ai_key file is created beside the database; securely back it up with the database. For PostgreSQL deployments, configure a persistent server-side key. A lost encryption key makes saved provider credentials unreadable. Secrets never appear in API responses or browser storage. Custom endpoints must resolve to public HTTPS addresses. Only use trusted endpoints, since each provider receives its configured key and chat queries.
 
 Run `py -m pytest -q tests/test_ai_models.py` to verify key protection, provider formats, bot routing and tenant isolation without making paid provider requests.
+
+## Developer documentation
+
+See [Deployment and local development](DEPLOYMENT.md) for installation, testing, configuration and operational guidance, and [PostgreSQL deployment](DEPLOY_POSTGRES.md) for persistent cloud storage.
