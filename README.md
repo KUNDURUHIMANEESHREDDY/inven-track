@@ -34,7 +34,7 @@ The hosted link is a demo. Production persistence, payment enablement, backup re
 
 ## Owner login
 
-Sign in with a one-time code sent to your registered email or Indian mobile number. First-time setup for each legacy contact requires its existing owner password and a delivered code. Subsequent logins use only the code. Shared mobile numbers require email login. Registration remains the existing owner registration flow. Configure a Twilio Verify service with SMS and its SendGrid email integration, and set TWILIO_VERIFY_SERVICE_SID, TWILIO_VERIFY_API_KEY, and TWILIO_VERIFY_API_SECRET in the server environment. No delivery credentials belong in browser code. Without provider configuration the OTP endpoints fail closed. The legacy password API is retained for backwards compatibility.
+Sign in to your existing business using your registered email address or Indian mobile number and password. Shared mobile numbers require email login. Registration still requires both contact fields. This is password authentication, not SMS or email OTP verification.
 
 ## Neon-managed email authentication
 
