@@ -52,6 +52,31 @@
         document.getElementById('auth-error').classList.remove('hidden');
     }
 
+    let otpChallenge = null;
+    let authPending = false;
+    const authEl = id => document.getElementById(id);
+    window.updateOtpSetup = function() {
+        const setup = authMode === 'login' && authEl('otp-first-time').checked && !otpChallenge;
+        const password = authEl('input-password');
+        authEl('auth-password-field').classList.toggle('hidden', authMode === 'login' && !setup);
+        password.disabled = authMode === 'login' && !setup;
+        password.required = authMode === 'signup' || setup;
+        if (password.disabled) password.value = '';
+    };
+    window.resetOtpLogin = function() {
+        otpChallenge = null;
+        authEl('input-identifier').disabled = authMode === 'signup';
+        authEl('otp-first-time').disabled = false;
+        authEl('otp-code-field').classList.add('hidden');
+        authEl('input-otp').disabled = true;
+        authEl('input-otp').required = false;
+        authEl('input-otp').value = '';
+        authEl('otp-status').classList.add('hidden');
+        authEl('auth-error').classList.add('hidden');
+        if (authMode === 'login') authEl('auth-submit-btn').textContent = 'Send verification code';
+        window.updateOtpSetup();
+    };
+
     window.handleAuthSubmit = async function(event) {
         event.preventDefault();
         const email = document.getElementById('input-email').value.trim();
@@ -65,26 +90,51 @@
             authError('Enter a valid email, 10-digit mobile number, and password.');
             return;
         }
-        if (authMode === 'login' && (!identifier || !password)) {
-            authError('Enter your registered email or mobile number and password.');
+        if (authMode === 'login' && !identifier) {
+            authError('Enter your registered email or mobile number.');
             return;
         }
         if (authMode === 'signup' && (!businessName || password.length < 8)) {
             authError('Enter a business name and a password of at least 8 characters.');
             return;
         }
+        if (authPending) return;
+        authPending = true;
+        const button = authEl('auth-submit-btn');
+        button.disabled = true;
         try {
-            const payload = authMode === 'signup'
-                ? { email, mobile, password, businessName, businessType: selectedType?.value || 'Supermart' }
-                : { identifier, password };
-            const route = authMode === 'signup' ? '/api/auth/register' : '/api/auth/login';
-            const result = await api(route, { method: 'POST', body: JSON.stringify(payload) });
+            let result;
+            if (authMode === 'signup') {
+                result = await api('/api/auth/register', { method: 'POST', body: JSON.stringify({ email, mobile, password, businessName, businessType: selectedType?.value || 'Supermart' }) });
+            } else if (!otpChallenge) {
+                const setupPassword = authEl('otp-first-time').checked ? password : undefined;
+                const started = await api('/api/auth/otp/start', { method: 'POST', body: JSON.stringify({ identifier, setupPassword }) });
+                if (authMode !== 'login') return;
+                otpChallenge = started.challenge;
+                authEl('input-identifier').disabled = true;
+                authEl('otp-first-time').disabled = true;
+                authEl('otp-code-field').classList.remove('hidden');
+                authEl('input-otp').disabled = false;
+                authEl('input-otp').required = true;
+                authEl('otp-status').textContent = started.message;
+                authEl('otp-status').classList.remove('hidden');
+                button.textContent = 'Verify code and sign in';
+                window.updateOtpSetup();
+                authEl('input-otp').focus();
+                return;
+            } else {
+                result = await api('/api/auth/otp/verify', { method: 'POST', body: JSON.stringify({ challenge: otpChallenge, code: authEl('input-otp').value.trim() }) });
+                window.resetOtpLogin();
+            }
             currentOwner = result.owner;
             await loadStore();
             enterDashboard();
             showToast('Welcome to ' + currentOwner.businessName, 'success');
         } catch (error) {
             authError(error.message);
+        } finally {
+            authPending = false;
+            button.disabled = false;
         }
     };
 

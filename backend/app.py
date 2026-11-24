@@ -104,6 +104,8 @@ def init_db():
         );
         """)
         migrate_schema(con)
+        from backend.passwordless import init_schema
+        init_schema(con)
 
 
 def migrate_schema(con):
@@ -241,10 +243,10 @@ def current_owner(request: Request):
     return owner
 
 
-def enforce_limit(request: Request, scope: str, max_hits: int, interval: int, identity: str = ""):
+def enforce_limit(request: Request, scope: str, max_hits: int, interval: int, identity: str = "", *, global_identity: bool = False):
     """SQLite-backed, multi-process fixed-window throttling; no proxy-spoofed client IP."""
     address = request.client.host if request.client else "unknown"
-    bucket = hashlib.sha256((scope + "|" + address + "|" + identity.lower()).encode()).hexdigest()
+    bucket = hashlib.sha256((scope + "|" + ("global" if global_identity else address) + "|" + identity.lower()).encode()).hexdigest()
     now = int(utcnow().timestamp())
     window_start = now - (now % interval)
     with database() as con:
@@ -753,3 +755,6 @@ app.include_router(payment_router)
 
 from backend.ai_models import router as ai_router
 app.include_router(ai_router)
+
+from backend.passwordless import router as otp_router
+app.include_router(otp_router)
