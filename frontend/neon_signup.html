@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Inventrack | Neon Auth</title>
+  <title>InvenTrack | Account access</title>
   <style>
     :root{font-family:Inter,ui-sans-serif,system-ui,sans-serif;color:#17223b;background:#f3f6fc}
     *{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;padding:24px}
@@ -22,11 +22,15 @@
     .notice.error{background:#fff1f2;color:#9f1239}footer{border-top:1px solid #e5e7eb;margin-top:24px;padding-top:20px}
     #current-user{font-size:13px;line-height:1.6;overflow-wrap:anywhere;margin:8px 0 14px}
     .actions{display:flex;flex-wrap:wrap;gap:8px}small{font-size:12px;color:#657086}
+      main{border-radius:16px;box-shadow:0 12px 36px #182b4a0c;border-color:#dfe5ee}
+    .primary{background:#3e55c8}.primary:hover{background:#3247b3}.brand,a{color:#3e55c8}
+    .tabs button[aria-selected="true"]{color:#3e55c8}input{border-color:#ccd6e4}h1{letter-spacing:-.035em}
   </style>
+  <link rel="stylesheet" href="/theme.css">
 </head>
 <body>
   <main>
-    <a href="/">← Back to Inventrack</a>
+    <a href="/">← Back to InvenTrack</a>
     <div class="brand" style="margin-top:22px">Managed identity · Neon</div>
     <h1>Create your account</h1>
     <p>Email-and-password accounts are secured by Neon's managed Better Auth. Your current login is checked below.</p>

@@ -1,0 +1,96 @@
+/* InvenTrack shared product theme. Keep behavioural utility classes and IDs intact. */
+:root {
+  --canvas: #f5f7fb;
+  --surface: #ffffff;
+  --ink: #17243b;
+  --muted: #58677c;
+  --line: #dfe5ee;
+  --accent: #3e55c8;
+  --accent-hover: #3247b3;
+  --nav: #142238;
+  --focus: #6479db;
+}
+html { color-scheme: light; }
+body { background: var(--canvas); color: var(--ink); font-family: Inter, system-ui, -apple-system, sans-serif; }
+button, a, input, select, textarea { -webkit-tap-highlight-color: transparent; }
+button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; }
+button:disabled { cursor: not-allowed; }
+.font-display { font-family: Inter, system-ui, sans-serif; letter-spacing: -0.025em; }
+.text-slate-500 { color: var(--muted); }
+body .bg-indigo-600 { background-color: var(--accent); }
+button.bg-indigo-600:hover { background-color: var(--accent-hover); }
+body .text-indigo-600 { color: var(--accent); }
+#auth-screen { background: var(--canvas); }
+#auth-screen > .auth-brand {
+  background: linear-gradient(150deg, #101c30 0%, #1c304d 68%, #263c57 100%);
+  padding: clamp(28px, 4vw, 64px);
+}
+.auth-brand > .relative { max-width: 550px; width: 100%; margin-inline: auto; }
+.auth-brand .auth-eyebrow { display: inline-flex; align-items: center; gap: 8px; border: 1px solid #91a5c43d; background: #ffffff09; color: #dbe5f6; padding: 6px 10px; border-radius: 999px; font-size: 11px; letter-spacing: .04em; margin: 16px 0 22px; }
+.auth-brand h2 { font-size: clamp(32px, 3.5vw, 52px); line-height: 1.13; letter-spacing: -.045em; max-width: 500px; }
+.auth-brand h2 span { color: #b5c5ff; }
+.auth-brand .auth-description { max-width: 480px; font-size: 15px; line-height: 1.75; }
+.auth-brand .auth-feature { border-color: #a7b8d12a; background: #ffffff06; border-radius: 12px; padding: 14px; }
+.auth-brand .auth-feature p:last-child { color: #c3cfdf; line-height: 1.5; }
+.auth-brand .auth-footer { color: #b5c2d5; }
+#auth-screen > .auth-main { padding: clamp(20px, 4vw, 56px); background: #f8fafc; }
+.auth-card { max-width: 460px; border-radius: 16px; box-shadow: 0 12px 36px #182b4a0c; border: 1px solid var(--line); }
+#auth-heading { font-size: 25px; letter-spacing: -.035em; }
+#auth-subtext { font-size: 13px; line-height: 1.6; }
+#auth-form label { font-size: 12px; }
+#auth-form input:not([type=radio]):not([type=checkbox]) { min-height: 42px; background: white; border-color: #ccd6e4; }
+#auth-form input:focus { border-color: var(--accent); }
+#auth-submit-btn { min-height: 44px; border-radius: 9px; box-shadow: none; }
+#dashboard-screen { background: var(--canvas); }
+#sidebar { background: var(--nav); width: 238px; height: 100vh; height: 100dvh; overflow-y: auto; scrollbar-width: thin; }
+#sidebar > div:first-child { min-height: 0; }
+#sidebar > div:last-child { margin-top: auto; flex-shrink: 0; }
+#sidebar .nav-btn { border-radius: 8px; min-height: 42px; font-weight: 500; color: #c2cedf; box-shadow: none; gap: 8px; }
+#sidebar .nav-btn:hover { background: #233650; color: white; }
+#sidebar .nav-btnbody .bg-indigo-600 { background: #334b7d; color: #fff; box-shadow: inset 3px 0 #a3b5ff; }
+#sidebar .nav-btn[aria-current=page] { font-weight: 600; }
+#sidebar .nav-btn > span:first-child { min-width: 0; }
+#sidebar .nav-btn svg { flex-shrink: 0; }
+#sidebar-biz-name { font-size: 14px; }
+#sidebar-owner-contact { color: #bdc9da; }
+#dashboard-screen header { background: #ffffff; min-height: 72px; border-color: var(--line); }
+#dashboard-screen header #page-title { font-size: clamp(18px, 2vw, 23px); font-weight: 650; letter-spacing: -.035em; }
+#dashboard-screen header #header-subtitle { margin-top: 4px; }
+#dashboard-screen main { max-width: 1560px; }
+#dashboard-screen main .bg-white.rounded-2xl { border-radius: 13px; border-color: var(--line); box-shadow: 0 2px 8px #17243b05; }
+#dashboard-screen main .bg-white.rounded-2xl:hover { box-shadow: 0 3px 12px #17243b0a; }
+#view-overview > .grid:first-child > div { min-width: 0; min-height: 142px; }
+#view-overview h3[id^=kpi-] { font-variant-numeric: tabular-nums; font-weight: 720; letter-spacing: -.045em; overflow-wrap: anywhere; }
+#view-overview .uppercase.tracking-wider { text-transform: none; letter-spacing: 0; font-size: 12px; }
+#sales-bar-chart { border-bottom-color: var(--line); background: repeating-linear-gradient(to top, transparent 0, transparent calc(25% - 1px), #e8edf5 calc(25% - 1px), #e8edf5 25%); border-radius: 6px 6px 0 0; }
+#dashboard-screen main table { font-variant-numeric: tabular-nums; }
+#dashboard-screen main table thead tr { background: #f7f9fc; color: #526176; }
+#dashboard-screen main table thead th { letter-spacing: .015em; text-transform: none; }
+#dashboard-screen main table tbody tr:hover { background: #f8faff; }
+#dashboard-screen main table td, #dashboard-screen main table th { vertical-align: middle; }
+#dashboard-screen main input:not([type=radio]):not([type=checkbox]), #dashboard-screen main select, #dashboard-screen main textarea { background-color: white; border-color: #ccd6e4; }
+#dashboard-screen main .overflow-x-auto { scrollbar-width: thin; }
+#dashboard-screen main section { min-width: 0; }
+#header-owner-email { max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+@media (max-width: 1023px) {
+  #auth-screen > .auth-brand { padding: 24px; }
+  .auth-brand h2 { font-size: 34px; max-width: 650px; }
+  .auth-brand .auth-features, .auth-brand .auth-footer { display: none; }
+  .auth-brand .auth-description { margin-bottom: 0; }
+  .auth-brand .auth-eyebrow { margin: 8px 0 12px; }
+  #auth-screen > .auth-main { padding: 22px 16px 36px; }
+  #dashboard-screen header { min-height: 60px; gap: 8px; }
+  #dashboard-screen header > div:first-child { min-width: 0; }
+  #dashboard-screen header #page-title { overflow-wrap: anywhere; }
+}
+@media (max-width: 480px) {
+  .auth-brand h2 { font-size: 29px; }
+  .auth-brand .auth-description { font-size: 13px; }
+  .auth-card { padding: 20px; }
+  #dashboard-screen main { padding: 16px 12px; }
+  #view-overview > .grid:first-child { gap: 10px; }
+  #view-overview > .grid:first-child > div { min-height: auto; padding: 16px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+}

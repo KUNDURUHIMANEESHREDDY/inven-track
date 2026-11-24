@@ -475,6 +475,11 @@ def frontend():
     return FileResponse(ROOT / "frontend" / "digital_inventory_and_sales_management_system.html")
 
 
+@app.get("/theme.css")
+def product_theme():
+    return FileResponse(ROOT / "frontend" / "theme.css", media_type="text/css")
+
+
 @app.get("/api.js")
 def frontend_api():
     return FileResponse(ROOT / "frontend" / "api.js", media_type="application/javascript")

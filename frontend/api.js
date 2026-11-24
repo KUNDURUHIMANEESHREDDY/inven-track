@@ -331,11 +331,11 @@
             if (status.demoOnly) {
                 const notice = document.createElement('div');
                 notice.setAttribute('role', 'status');
-                notice.className = 'fixed inset-x-0 top-0 z-[9999] text-center px-4 py-2 bg-amber-100 text-amber-900 border-b border-amber-300 text-xs font-semibold shadow';
+                notice.className = 'demo-notice text-center px-4 py-2 bg-amber-100 text-amber-900 border-b border-amber-300 text-xs font-semibold';
                 notice.textContent = status.database === 'postgresql'
                     ? 'Hosted demo with persistent PostgreSQL — accounts are for testing only; payments and real registration are disabled.'
                     : 'Temporary hosted demo — inventory, invoices and sessions may reset after a restart. Do not enter real business data.';
-                document.body.appendChild(notice);
+                document.body.prepend(notice);
             }
         } catch (_) { /* Optional availability banner. */ }
         try {

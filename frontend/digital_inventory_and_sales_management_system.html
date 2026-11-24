@@ -54,6 +54,7 @@
             animation: slideUp 0.25s ease-out forwards;
         }
     </style>
+    <link rel="stylesheet" href="/theme.css">
 </head>
 <body class="bg-slate-50 text-slate-800 antialiased selection:bg-indigo-100 selection:text-indigo-800">
 
@@ -62,7 +63,7 @@
     ====================================================================== -->
     <div id="auth-screen" class="min-h-screen flex flex-col lg:flex-row bg-slate-900">
         <!-- Left Brand Showcase Panel -->
-        <div class="lg:w-5/12 bg-gradient-to-br from-indigo-950 via-slate-900 to-slate-950 text-white p-8 lg:p-12 flex flex-col justify-between relative overflow-hidden">
+        <div class="auth-brand lg:w-5/12 bg-gradient-to-br from-indigo-950 via-slate-900 to-slate-950 text-white p-8 lg:p-12 flex flex-col justify-between relative overflow-hidden">
             <!-- Subtle decorative grid/glow -->
             <div class="absolute -top-24 -left-24 w-72 h-72 bg-indigo-500/20 rounded-full blur-3xl pointer-events-none"></div>
             <div class="absolute bottom-10 right-10 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
@@ -78,54 +79,55 @@
                         <p class="text-xs text-slate-400">Digital Inventory & Sales Management</p>
                     </div>
                 </div>
+                <div class="auth-eyebrow">Business management workspace</div>
                 <h2 class="font-display text-3xl lg:text-4xl font-bold leading-tight mb-4">
-                    Smart Billing & Stock Control for <span class="text-indigo-400">Small Businesses.</span>
+                    Run your business. <span class="text-indigo-400">Stay in control.</span>
                 </h2>
-                <p class="text-slate-300 text-sm leading-relaxed mb-8">
-                    Built specifically for Indian <strong>Hotels, Supermarts, and General Stores</strong>. Streamline daily POS billing, automate low-stock alerts, track ₹ revenue analytics, and onboard new staff effortlessly with a built-in AI Assistant.
+                <p class="auth-description text-slate-300 text-sm leading-relaxed mb-8">
+                    Manage inventory, create invoices, track sales and get AI-powered assistance in one workspace built for retail and hospitality businesses.
                 </p>
 
                 <!-- Feature Highlights -->
-                <div class="space-y-3.5 text-sm">
-                    <div class="flex items-start gap-3 bg-white/5 border border-white/10 p-3.5 rounded-xl">
+                <div class="auth-features space-y-3.5 text-sm">
+                    <div class="auth-feature flex items-start gap-3 bg-white/5 border border-white/10 p-3.5 rounded-xl">
                         <div class="p-2 rounded-lg bg-emerald-500/20 text-emerald-400 shrink-0">
                             <i data-lucide="receipt" class="w-4 h-4"></i>
                         </div>
                         <div>
-                            <p class="font-semibold text-white">Real-Time POS Billing & Auto Stock Sync</p>
+                            <p class="font-semibold text-white">Billing & inventory</p>
                             <p class="text-xs text-slate-400 mt-0.5">Every customer bill automatically deducts inventory and updates sales KPIs.</p>
                         </div>
                     </div>
-                    <div class="flex items-start gap-3 bg-white/5 border border-white/10 p-3.5 rounded-xl">
+                    <div class="auth-feature flex items-start gap-3 bg-white/5 border border-white/10 p-3.5 rounded-xl">
                         <div class="p-2 rounded-lg bg-amber-500/20 text-amber-400 shrink-0">
                             <i data-lucide="bell-ring" class="w-4 h-4"></i>
                         </div>
                         <div>
-                            <p class="font-semibold text-white">Smart Low-Stock Threshold Alerts</p>
+                            <p class="font-semibold text-white">Stock alerts</p>
                             <p class="text-xs text-slate-400 mt-0.5">Instant dashboard warnings with one-click restock actions.</p>
                         </div>
                     </div>
-                    <div class="flex items-start gap-3 bg-white/5 border border-white/10 p-3.5 rounded-xl">
+                    <div class="auth-feature flex items-start gap-3 bg-white/5 border border-white/10 p-3.5 rounded-xl">
                         <div class="p-2 rounded-lg bg-indigo-500/20 text-indigo-300 shrink-0">
                             <i data-lucide="bot" class="w-4 h-4"></i>
                         </div>
                         <div>
-                            <p class="font-semibold text-white">AI Worker Onboarding & Help Chatbot</p>
-                            <p class="text-xs text-slate-400 mt-0.5">24/7 interactive guide so any new counter worker can operate the system.</p>
+                            <p class="font-semibold text-white">AI-powered assistance</p>
+                            <p class="text-xs text-slate-400 mt-0.5">Get help with everyday workflows using configurable AI assistants.</p>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="relative z-10 pt-8 mt-8 border-t border-white/10 flex items-center justify-between text-xs text-slate-400">
-                <span>Interactive System Architecture Prototype</span>
+            <div class="auth-footer relative z-10 pt-8 mt-8 border-t border-white/10 flex items-center justify-between text-xs text-slate-400">
+                <span>Designed for growing businesses</span>
                 <span class="text-indigo-300 font-medium">INR (₹) Enabled</span>
             </div>
         </div>
 
         <!-- Right Owner Login / Account Creation Form -->
-        <div class="lg:w-7/12 bg-slate-50 flex items-center justify-center p-6 sm:p-10 lg:p-14">
-            <div class="w-full max-w-md bg-white rounded-2xl shadow-xl shadow-slate-200/70 border border-slate-200/80 p-7 sm:p-8">
+        <div class="auth-main lg:w-7/12 bg-slate-50 flex items-center justify-center p-6 sm:p-10 lg:p-14">
+            <div class="auth-card w-full max-w-md bg-white rounded-2xl shadow-xl shadow-slate-200/70 border border-slate-200/80 p-7 sm:p-8">
                 
                 <!-- Auth Mode Tabs -->
                 <div class="grid grid-cols-2 gap-1 bg-slate-100 p-1 rounded-xl mb-6">
@@ -238,13 +240,13 @@
                 <div class="relative my-6">
                     <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-slate-200"></div></div>
                     <div class="relative flex justify-center text-xs">
-                        <span class="px-3 bg-white text-slate-400 font-medium">For Project Demo / Presentation</span>
+                        <span class="px-3 bg-white text-slate-400 font-medium">Explore before signing up</span>
                     </div>
                 </div>
 
                 <button type="button" onclick="quickDemoLogin()" class="w-full py-2.5 px-4 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 font-semibold text-xs rounded-xl transition flex items-center justify-center gap-2">
                     <i data-lucide="zap" class="w-4 h-4 text-emerald-600"></i>
-                    <span>Quick Demo Login (Pre-filled Store Data)</span>
+                    <span>Explore the demo workspace</span>
                 </button>
             </div>
         </div>
@@ -290,19 +292,19 @@
 
                 <!-- Navigation Menu -->
                 <nav class="mt-6 px-3 space-y-1.5">
-                    <p class="px-3 text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-2">Main Modules</p>
+                    <p class="px-3 text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-2">WORKSPACE</p>
                     
-                    <button onclick="switchTab('overview')" id="nav-overview" class="nav-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-medium bg-indigo-600 text-white shadow-md shadow-indigo-600/20 transition">
+                    <button onclick="switchTab('overview')" id="nav-overview" aria-current="page" class="nav-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-medium bg-indigo-600 text-white shadow-md shadow-indigo-600/20 transition">
                         <span class="flex items-center gap-3">
                             <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
-                            <span>Dashboard Reports</span>
+                            <span>Overview</span>
                         </span>
                     </button>
 
                     <button onclick="switchTab('billing')" id="nav-billing" class="nav-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition">
                         <span class="flex items-center gap-3">
                             <i data-lucide="calculator" class="w-4 h-4"></i>
-                            <span>Billing / POS Counter</span>
+                            <span>Point of sale</span>
                         </span>
                         <span class="px-1.5 py-0.5 text-[10px] font-bold bg-emerald-500/20 text-emerald-300 rounded">POS</span>
                     </button>
@@ -310,7 +312,7 @@
                     <button onclick="switchTab('inventory')" id="nav-inventory" class="nav-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition">
                         <span class="flex items-center gap-3">
                             <i data-lucide="boxes" class="w-4 h-4"></i>
-                            <span>Digital Inventory</span>
+                            <span>Inventory</span>
                         </span>
                         <span id="nav-low-stock-badge" class="px-2 py-0.5 text-[10px] font-bold bg-amber-500 text-slate-950 rounded-full">0</span>
                     </button>
@@ -318,7 +320,7 @@
                     <button onclick="switchTab('transactions')" id="nav-transactions" class="nav-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition">
                         <span class="flex items-center gap-3">
                             <i data-lucide="history" class="w-4 h-4"></i>
-                            <span>Sales & Bills Log</span>
+                            <span>Sales history</span>
                         </span>
                     </button>
                     <button onclick="switchTab('ai')" id="nav-ai" class="nav-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition">
@@ -326,7 +328,6 @@
                             <i data-lucide="brain-circuit" class="w-4 h-4"></i>
                             <span>AI Model Studio</span>
                         </span>
-                        <span class="text-[10px] bg-indigo-500/20 text-indigo-200 px-2 py-0.5 rounded-md font-bold">NEW</span>
                     </button>
                 </nav>
             </div>
@@ -336,7 +337,7 @@
                 <div class="p-3 rounded-xl bg-gradient-to-r from-indigo-600/20 to-emerald-600/20 border border-indigo-500/30">
                     <div class="flex items-center gap-2 text-xs font-semibold text-white mb-1">
                         <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-400"></i>
-                        <span>New Worker Guide</span>
+                        <span>AI assistance</span>
                     </div>
                     <p class="text-[11px] text-slate-300 leading-relaxed mb-2">Need help creating bills or checking stock?</p>
                     <button onclick="toggleChatbot(true)" class="w-full py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold rounded-lg transition">
@@ -346,7 +347,7 @@
 
                 <button onclick="logoutUser()" class="w-full flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs font-semibold text-rose-300 hover:bg-rose-500/10 border border-transparent hover:border-rose-500/20 transition">
                     <i data-lucide="log-out" class="w-4 h-4"></i>
-                    <span>Logout Owner Session</span>
+                    <span>Sign out</span>
                 </button>
             </div>
         </aside>
@@ -362,12 +363,12 @@
                     </button>
                     <div>
                         <div class="flex items-center gap-2">
-                            <h1 id="page-title" class="font-display font-bold text-lg sm:text-xl text-slate-900">Dashboard Overview & Reports</h1>
-                            <span class="hidden sm:inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Live Sync
+                            <h1 id="page-title" class="font-display font-bold text-lg sm:text-xl text-slate-900">Overview</h1>
+                            <span class="hidden sm:inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-slate-100 text-slate-600 border border-slate-200">
+                                <span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span> Workspace
                             </span>
                         </div>
-                        <p id="header-subtitle" class="text-xs text-slate-500 hidden sm:block">Real-time sales performance, inventory health & low-stock alerts</p>
+                        <p id="header-subtitle" class="text-xs text-slate-500 hidden sm:block">Sales performance, stock levels and business insights</p>
                     </div>
                 </div>
 
@@ -375,7 +376,7 @@
                     <!-- Quick Jump to POS -->
                     <button onclick="switchTab('billing')" class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold shadow-sm transition">
                         <i data-lucide="plus-circle" class="w-4 h-4"></i>
-                        <span class="hidden sm:inline">New Customer Bill</span>
+                        <span class="hidden sm:inline">New invoice</span>
                         <span class="sm:hidden">Bill</span>
                     </button>
 
@@ -386,7 +387,7 @@
                         </div>
                         <div class="text-left">
                             <p id="header-owner-email" class="text-xs font-semibold text-slate-800 leading-none">owner@store.in</p>
-                            <p class="text-[10px] text-slate-500 mt-1">Verified Owner</p>
+                            <p class="text-[10px] text-slate-500 mt-1">Business owner</p>
                         </div>
                     </div>
                 </div>
@@ -470,7 +471,7 @@
                         <div class="lg:col-span-7 bg-white rounded-2xl p-6 border border-slate-200/80 shadow-xs flex flex-col justify-between">
                             <div class="flex flex-wrap items-center justify-between gap-2 mb-6">
                                 <div>
-                                    <h3 class="font-display font-bold text-base text-slate-900">Weekly Sales Revenue Analytics</h3>
+                                    <h3 class="font-display font-bold text-base text-slate-900">Revenue over time</h3>
                                     <p class="text-xs text-slate-500">7-day revenue trend (Today updates live with every POS bill)</p>
                                 </div>
                                 <span class="px-3 py-1 rounded-lg bg-indigo-50 text-indigo-700 text-xs font-semibold">
@@ -521,7 +522,7 @@
                         <div class="lg:col-span-7 bg-white rounded-2xl p-6 border border-slate-200/80 shadow-xs">
                             <div class="flex items-center justify-between mb-4">
                                 <div>
-                                    <h3 class="font-display font-bold text-base text-slate-900">Recent Customer Bills</h3>
+                                    <h3 class="font-display font-bold text-base text-slate-900">Recent invoices</h3>
                                     <p class="text-xs text-slate-500">Latest invoices generated at POS counter</p>
                                 </div>
                                 <button onclick="switchTab('transactions')" class="text-xs font-semibold text-indigo-600 hover:underline">View Full Log</button>
@@ -1237,10 +1238,10 @@
         function switchTab(tabName) {
             const views = ['overview', 'billing', 'inventory', 'transactions', 'ai'];
             const titles = {
-                overview: ['Dashboard Overview & Reports', 'Real-time sales performance, inventory health & low-stock alerts'],
-                billing: ['POS Counter & Quick Billing', 'Select items, apply GST, choose payment mode & auto-deduct stock'],
-                inventory: ['Digital Inventory Management', 'Track stock quantities, restock low items & add new products'],
-                transactions: ['Sales & Billing Audit Log', 'Complete history of generated customer invoices'],
+                overview: ['Overview', 'Sales performance, stock levels and business insights'],
+                billing: ['Point of sale', 'Select items, apply GST, choose payment mode & auto-deduct stock'],
+                inventory: ['Inventory', 'Track stock quantities, restock low items & add new products'],
+                transactions: ['Sales history', 'Complete history of generated customer invoices'],
                 ai: ['AI Model Studio', 'Connect providers, protect API keys and route models to your chatbots']
             };
 
@@ -1248,10 +1249,12 @@
                 const viewEl = document.getElementById(`view-${v}`);
                 const navEl = document.getElementById(`nav-${v}`);
                 if (v === tabName) {
+                    navEl.setAttribute('aria-current', 'page');
                     viewEl.classList.remove('hidden');
                     navEl.className = 'nav-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-medium bg-indigo-600 text-white shadow-md shadow-indigo-600/20 transition';
                 } else {
                     viewEl.classList.add('hidden');
+                    navEl.removeAttribute('aria-current');
                     navEl.className = 'nav-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition';
                 }
             });
@@ -1872,7 +1875,7 @@
         function generateLocalSmartReply(query, todaySales, lowStockNames) {
             const q = query.toLowerCase();
             if (q.includes('bill') || q.includes('pos') || q.includes('customer') || q.includes('checkout')) {
-                return `Here is how a worker creates a customer bill in 4 easy steps:\n1. Open **Billing / POS Counter** from the left sidebar.\n2. Tap items from the catalog (or search by name) to add them to the cart.\n3. Select payment mode (**UPI / QR**, **Cash**, or **Card**) and optional **5% GST**.\n4. Click **Generate Bill & Deduct Stock** — the system automatically reduces stock and prints a receipt!`;
+                return `Here is how a worker creates a customer bill in 4 easy steps:\n1. Open **Point of sale** from the left sidebar.\n2. Tap items from the catalog (or search by name) to add them to the cart.\n3. Select payment mode (**UPI / QR**, **Cash**, or **Card**) and optional **5% GST**.\n4. Click **Generate Bill & Deduct Stock** — the system automatically reduces stock and prints a receipt!`;
             }
             if (q.includes('restock') || q.includes('low') || q.includes('alert') || q.includes('stock')) {
                 return `To handle low-stock items:\n• Check the **Low-Stock Alerts** panel right on the main Dashboard or open **Digital Inventory**.\n• Currently low items: **${lowStockNames}**.\n• Simply click the **+10 Restock** button next to any item to replenish stock immediately.`;
@@ -1883,7 +1886,7 @@
             if (q.includes('summary') || q.includes('sales') || q.includes('report')) {
                 return `📊 **Live Store Summary:**\n• **Today's Revenue:** ${formatINR(todaySales)} (${bills.length} bills generated)\n• **Catalog Size:** ${inventory.length} active items\n• **Attention Needed (Low Stock):** ${lowStockNames}`;
             }
-            return `I can help you operate **InvenTrack**! You can:\n• Click **Billing / POS Counter** to create customer bills & auto-deduct stock.\n• Click **Digital Inventory** to add new items or restock low inventory.\n• View **Dashboard Reports** to track daily ₹ sales and weekly trends.`;
+            return `I can help you operate **InvenTrack**! You can:\n• Click **Point of sale** to create customer bills & auto-deduct stock.\n• Click **Digital Inventory** to add new items or restock low inventory.\n• View **Overview** to track daily ₹ sales and weekly trends.`;
         }
 
         function escapeHtml(str) {

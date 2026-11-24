@@ -132,6 +132,11 @@ def test_frontend_and_health(client):
     assert client.get("/").status_code == 200
     assert 'api.js' in client.get("/").text
     assert client.get("/api.js").status_code == 200
+    assert '/theme.css' in client.get("/").text
+    theme = client.get("/theme.css")
+    assert theme.status_code == 200
+    assert theme.headers["content-type"].startswith("text/css")
+    assert "--canvas" in theme.text
     assert client.get("/api/health").json()["status"] == "ok"
 
 
