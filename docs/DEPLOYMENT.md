@@ -2,7 +2,7 @@
 
 ## Local development on Windows
 
-Double-click `run_backend.bat`, or install dependencies and start the backend from the repository root:
+Double-click `scripts/run_backend.bat`, or install dependencies and start the backend from the repository root:
 
 ```powershell
 py -m pip install -r requirements.txt

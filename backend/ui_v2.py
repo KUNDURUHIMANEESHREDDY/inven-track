@@ -1,5 +1,5 @@
 from pathlib import Path
-p = Path(__file__).resolve().parent.parent / "digital_inventory_and_sales_management_system.html"
+p = Path(__file__).resolve().parent.parent / "frontend" / "digital_inventory_and_sales_management_system.html"
 s = p.read_text(encoding="utf-8")
 if 'id="new-prod-cost"' not in s:
     anchor = '                <div class="grid grid-cols-2 gap-3">\n                    <div>\n                        <label class="block text-xs font-semibold text-slate-700 mb-1">Opening Stock Qty'

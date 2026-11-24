@@ -51,7 +51,7 @@ The Neon CLI links to project `wild-snow-59431122`, branch `main` and
 Neon's branch configuration; do not place secret tokens or database passwords
 in browser assets. The CLI wrote branch Auth env values to ignored `.env.local`.
 
-To rebuild the checked-in browser asset after editing `neon_auth_frontend.js`:
+To rebuild the checked-in browser asset after editing `frontend/neon_auth_frontend.js`:
 ```bash
 npm install
 npm run build:auth
@@ -75,4 +75,15 @@ Run `py -m pytest -q tests/test_ai_models.py` to verify key protection, provider
 
 ## Developer documentation
 
-See [Deployment and local development](DEPLOYMENT.md) for installation, testing, configuration and operational guidance, and [PostgreSQL deployment](DEPLOY_POSTGRES.md) for persistent cloud storage.
+See [Deployment and local development](docs/DEPLOYMENT.md) for installation, testing, configuration and operational guidance, and [PostgreSQL deployment](docs/DEPLOY_POSTGRES.md) for persistent cloud storage.
+
+## Repository structure
+
+- [frontend/](frontend/) - browser interface, JavaScript and bundled authentication client.
+- [backend/](backend/) - API, business logic, database and integrations.
+- [docs/](docs/) - deployment and operational guides.
+- [deploy/](deploy/) - reverse proxy configuration.
+- [scripts/](scripts/) - local launcher and backup utilities.
+- [tests/](tests/) - backend and frontend regression tests.
+
+Root-level manifests and hosting entrypoints remain in place for tooling compatibility.

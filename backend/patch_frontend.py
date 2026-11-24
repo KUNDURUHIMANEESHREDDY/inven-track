@@ -1,7 +1,7 @@
 """One-time safe integration changes for the original standalone HTML."""
 from pathlib import Path
 
-path = Path(__file__).resolve().parent.parent / "digital_inventory_and_sales_management_system.html"
+path = Path(__file__).resolve().parent.parent / "frontend" / "digital_inventory_and_sales_management_system.html"
 text = path.read_text(encoding="utf-8")
 
 if '<script src="/api.js"></script>' not in text:

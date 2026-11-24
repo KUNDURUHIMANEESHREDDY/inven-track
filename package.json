@@ -6,6 +6,6 @@
     "esbuild": "^0.28.2"
   },
   "scripts": {
-    "build:auth": "esbuild neon_auth_frontend.js --bundle --format=iife --platform=browser --target=es2022 --outfile=neon_auth_bundle.js --minify"
+    "build:auth": "esbuild frontend/neon_auth_frontend.js --bundle --format=iife --platform=browser --target=es2022 --outfile=frontend/neon_auth_bundle.js --minify"
   }
 }

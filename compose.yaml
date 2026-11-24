@@ -45,7 +45,7 @@ services:
     environment:
       DOMAIN: ${DOMAIN:?Set your actual DNS domain in .env}
     volumes:
-      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
       - caddy_data:/data
       - caddy_config:/config
     networks:

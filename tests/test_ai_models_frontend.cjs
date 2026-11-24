@@ -5,8 +5,8 @@ const fs = require('node:fs');
 const path = require('node:path');
 const vm = require('node:vm');
 
-const script = fs.readFileSync(path.join(__dirname, '..', 'ai_models.js'), 'utf8');
-const html = fs.readFileSync(path.join(__dirname, '..', 'digital_inventory_and_sales_management_system.html'), 'utf8');
+const script = fs.readFileSync(path.join(__dirname, '..', 'frontend', 'ai_models.js'), 'utf8');
+const html = fs.readFileSync(path.join(__dirname, '..', 'frontend', 'digital_inventory_and_sales_management_system.html'), 'utf8');
 
 function mockForm(status, detail) {
     const elements = {};

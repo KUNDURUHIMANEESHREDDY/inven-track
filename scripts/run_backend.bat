@@ -1,6 +1,6 @@
 @echo off
 setlocal
-cd /d "%~dp0"
+cd /d "%~dp0.."
 echo Starting InvenTrack Python backend...
 py -c "import fastapi, uvicorn" >nul 2>nul
 if errorlevel 1 (

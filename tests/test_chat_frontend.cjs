@@ -6,7 +6,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const vm = require('node:vm');
 
-const html = fs.readFileSync(path.join(__dirname, '..', 'digital_inventory_and_sales_management_system.html'), 'utf8');
+const html = fs.readFileSync(path.join(__dirname, '..', 'frontend', 'digital_inventory_and_sales_management_system.html'), 'utf8');
 const start = html.indexOf('let aiChatInFlight = false;');
 const end = html.indexOf('function generateLocalSmartReply(', start);
 assert.ok(start > 0 && end > start, 'Chat backend implementation must exist');

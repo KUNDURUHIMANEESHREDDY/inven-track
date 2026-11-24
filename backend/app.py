@@ -474,27 +474,27 @@ def seed_demo(con, owner_id):
 
 @app.get("/")
 def frontend():
-    return FileResponse(ROOT / "digital_inventory_and_sales_management_system.html")
+    return FileResponse(ROOT / "frontend" / "digital_inventory_and_sales_management_system.html")
 
 
 @app.get("/api.js")
 def frontend_api():
-    return FileResponse(ROOT / "api.js", media_type="application/javascript")
+    return FileResponse(ROOT / "frontend" / "api.js", media_type="application/javascript")
 
 
 @app.get("/ai_models.js")
 def ai_frontend_script():
-    return FileResponse(ROOT / "ai_models.js", media_type="application/javascript")
+    return FileResponse(ROOT / "frontend" / "ai_models.js", media_type="application/javascript")
 
 
 @app.get("/neon-signup")
 def neon_signup_page():
-    return FileResponse(ROOT / "neon_signup.html")
+    return FileResponse(ROOT / "frontend" / "neon_signup.html")
 
 
 @app.get("/neon_auth_bundle.js")
 def neon_signup_bundle():
-    return FileResponse(ROOT / "neon_auth_bundle.js", media_type="application/javascript")
+    return FileResponse(ROOT / "frontend" / "neon_auth_bundle.js", media_type="application/javascript")
 
 
 @app.get("/api/health")
