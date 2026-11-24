@@ -1,6 +1,36 @@
 # InvenTrack
 
-Python 3.11 FastAPI + SQLite backend for the existing HTML inventory and billing frontend.
+**Inventory & Sales OS for retail and small businesses.**
+
+InvenTrack brings inventory management, billing, sales analytics and configurable AI assistance into one browser-based workspace. It helps business owners track stock and costs, create invoices, monitor gross profit and make better-informed day-to-day decisions without switching between disconnected tools.
+
+[Open the hosted demo](https://inven-track-demo.onrender.com/)
+
+## Core capabilities
+
+| Area | Features |
+| --- | --- |
+| Inventory | Product catalog, stock quantities, selling prices, unit costs and low-stock alerts |
+| Billing and sales | Server-calculated invoices, optional 5% GST, checkout stock validation and atomic stock deductions |
+| Business insights | Sales and gross-profit tracking with immutable invoice cost snapshots |
+| AI Model Studio | Configurable AI providers, model discovery, provider testing and dedicated Staff Assistant, Sales Analyst and Inventory Guide bots |
+| Accounts | Per-business owner login using registered email or Indian mobile number and password, sessions and tenant isolation |
+| Payments | Optional Razorpay checkout with signature, captured-payment and webhook verification |
+| Persistence | SQLite for local development; PostgreSQL support for persistent cloud deployments |
+| Security and recovery | Encrypted AI credentials, rate limiting, security headers and encrypted backup tooling |
+
+## Technology and architecture
+
+- **Frontend:** HTML, CSS and JavaScript; browser-based inventory and billing interface.
+- **Backend:** Python 3.11, FastAPI, Uvicorn and Pydantic.
+- **Data:** SQLite locally, PostgreSQL through psycopg when `DATABASE_URL` is configured; Neon is a supported hosted database option.
+- **Authentication:** FastAPI business-owner sessions; separate Neon Better Auth email/password flow using the official JavaScript SDK.
+- **AI:** OpenAI, Gemini, Anthropic, OpenRouter, Groq, Together and custom public HTTPS endpoints.
+- **Deployment:** Docker, Caddy, Render and optional PythonAnywhere configuration.
+
+The backend handles tenant authorization, invoice calculations, stock transactions and provider requests. Database credentials and provider encryption keys belong in server-side environment configuration, never in frontend source or Git.
+
+The hosted link is a demo. Production persistence, payment enablement, backup restoration and managed-auth integration must be validated for the actual deployment.
 
 ## Start on Windows
 Double-click run_backend.bat, or run:
@@ -10,17 +40,6 @@ Double-click run_backend.bat, or run:
 
 API docs: http://127.0.0.1:8000/docs
 Tests: py -m pytest -q tests
-
-## Includes
-- Per-business login, sessions and tenant isolation
-- Durable products, stock, prices, unit costs and low-stock alerts
-- Server-calculated invoices, optional 5% GST, immutable cost snapshots and gross profit
-- Checkout stock checks and atomic deductions
-- SQLite rate limiting and anti-framing/security headers
-- Optional Razorpay checkout with signature, captured-payment verification and webhooks
-- Encrypted SQLite backups and scheduled Windows backup task
-- Caddy + Docker Compose deployment configuration
-- Optional Gemini API backend with local frontend help fallback
 
 See DEPLOYMENT.md for setup and limitations. Do not place API keys into the frontend or commit backup keys, .env or databases.
 
@@ -61,6 +80,6 @@ Auth session alone is not an Inventrack owner session.
 ## AI Model Studio
 Log in and select **AI Model Studio** in the sidebar. Click **Connect new model**, choose OpenAI, Gemini, Anthropic, OpenRouter, Groq, Together or a custom HTTPS endpoint, enter the model ID and optional API key, then save. **Test** uses a real provider request and may consume credits. Assign a model and optional instructions separately to Staff Assistant, Sales Analyst and Inventory Guide. The chat widget lets you switch bots.
 
-Provider credentials are encrypted in SQLite using INVENTRACK_AI_KEY (Fernet). Without this environment variable, a private .ai_key file is created beside the SQLite database; securely back it up with the database. A lost encryption key makes saved provider credentials unreadable. Secrets never appear in API responses or browser storage. Custom endpoints must resolve to public HTTPS addresses. Only use trusted endpoints, since each provider receives its configured key and chat queries.
+Provider credentials are encrypted using INVENTRACK_AI_KEY (Fernet) before storage. For local SQLite development, if the variable is absent, a private .ai_key file is created beside the database; securely back it up with the database. For PostgreSQL deployments, configure a persistent server-side key. A lost encryption key makes saved provider credentials unreadable. Secrets never appear in API responses or browser storage. Custom endpoints must resolve to public HTTPS addresses. Only use trusted endpoints, since each provider receives its configured key and chat queries.
 
 Run `py -m pytest -q tests/test_ai_models.py` to verify key protection, provider formats, bot routing and tenant isolation without making paid provider requests.
