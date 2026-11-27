@@ -1,11 +1,14 @@
 {
   "dependencies": {
+    "@huggingface/transformers": "4.3.2",
     "@neon/auth": "^0.8.2",
     "@neon/config": "^1.14.6",
     "@neon/env": "^2.1.9",
     "esbuild": "^0.28.2"
   },
   "scripts": {
-    "build:auth": "esbuild frontend/neon_auth_frontend.js --bundle --format=iife --platform=browser --target=es2022 --outfile=frontend/neon_auth_bundle.js --minify"
+    "build:auth": "esbuild frontend/neon_auth_frontend.js --bundle --format=iife --platform=browser --target=es2022 --outfile=frontend/neon_auth_bundle.js --minify",
+    "build:qwen": "esbuild frontend/qwen_worker.js --bundle --format=esm --platform=browser --target=es2022 --outfile=frontend/qwen_worker.bundle.js --minify",
+    "build": "npm run build:auth && npm run build:qwen"
   }
 }

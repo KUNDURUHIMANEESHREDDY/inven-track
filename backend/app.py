@@ -490,6 +490,16 @@ def ai_frontend_script():
     return FileResponse(ROOT / "frontend" / "ai_models.js", media_type="application/javascript")
 
 
+@app.get("/qwen_local.js")
+def qwen_local_script():
+    return FileResponse(ROOT / "frontend" / "qwen_local.js", media_type="application/javascript")
+
+
+@app.get("/qwen_worker.bundle.js")
+def qwen_worker_bundle():
+    return FileResponse(ROOT / "frontend" / "qwen_worker.bundle.js", media_type="application/javascript")
+
+
 @app.get("/neon-signup")
 def neon_signup_page():
     return FileResponse(ROOT / "frontend" / "neon_signup.html")

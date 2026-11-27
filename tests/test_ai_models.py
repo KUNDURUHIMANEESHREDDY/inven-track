@@ -359,3 +359,19 @@ def test_model_discovery_upstream_403_is_actionable_and_redacted(monkeypatch):
     assert exc.value.status_code == 502
     assert "403" in exc.value.detail
     assert "test-private-key" not in exc.value.detail
+
+def test_browser_local_context_is_authenticated_read_only_and_owner_scoped(client):
+    assert client.get("/api/ai/context").status_code == 401
+    create_owner(client, "alpha", "9876543210")
+    first = client.get("/api/ai/context?bot=inventory")
+    assert first.status_code == 200, first.text
+    assert "Shop alpha" in first.json()["instruction"]
+    assert "low-stock products" in first.json()["instruction"]
+    assert "apiKey" not in first.text
+    assert client.get("/api/ai/context?bot=undefined").status_code == 404
+    client.post("/api/auth/logout")
+    create_owner(client, "beta", "8888888888")
+    second = client.get("/api/ai/context?bot=inventory")
+    assert second.status_code == 200
+    assert "Shop beta" in second.json()["instruction"]
+    assert "Shop alpha" not in second.json()["instruction"]
