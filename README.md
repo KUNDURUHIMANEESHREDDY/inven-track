@@ -73,6 +73,24 @@ Provider credentials are encrypted using INVENTRACK_AI_KEY (Fernet) before stora
 
 Run `py -m pytest -q tests/test_ai_models.py` to verify key protection, provider formats, bot routing and tenant isolation without making paid provider requests.
 
+## Local Qwen3.5-0.8B in AI Model Studio
+
+In **AI Model Studio**, select **Qwen3.5-0.8B · On this device (WebGPU)** for an assistant and save its assignment. Use **Download / Test local Qwen** to fetch and initialize the model. First use downloads approximately 700–800 MB of quantized ONNX model files from Hugging Face; subsequent use can reuse the browser's cache if storage remains available. The first download may take several minutes on slower connections. The model runs in a Web Worker using WebGPU and requires an HTTPS (or localhost) origin and a capable device.
+
+Local Qwen selection is stored only in that browser, scoped to the signed-in business and bot. The server keeps any prior cloud-model assignment; selecting a cloud model again disables the local override. If local inference fails, the application displays an error **without silently sending the user's message to a cloud provider**. Change the assistant selection to the configured cloud model to use it. The server provides authenticated, read-only sales and low-stock facts to the local model via `/api/ai/context` — no AI API credentials are returned.
+
+**Build and verification:**
+```bash
+npm ci
+npm run build:qwen
+node --test tests/test_ai_models_frontend.cjs tests/test_qwen_frontend.cjs
+python -m pytest -q tests/test_ai_models.py
+# Windows + real browser and WebGPU required for this acceptance test:
+python scripts/verify_qwen_webgpu.py
+```
+
+The generated `frontend/qwen_worker.bundle.js` is **not committed to Git**. Render's multi-stage Docker build uses the pinned npm lockfile to compile it and copies the bundle into the final Python image; local development requires `npm run build:qwen` before serving the page. The model weights are **not** embedded in the Docker image or hosted on Render. Actual browser inference and device memory performance must be measured; this is not guaranteed to work on mobile browsers or low-memory GPUs. The UI remains usable with an assigned cloud provider.
+
 ## Developer documentation
 
 See [Deployment and local development](docs/DEPLOYMENT.md) for installation, testing, configuration and operational guidance, and [PostgreSQL deployment](docs/DEPLOY_POSTGRES.md) for persistent cloud storage.

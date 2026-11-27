@@ -27,3 +27,6 @@ scripts/plan_check.graphql
 *.sql
 node_modules/
 .neon
+
+# Generated during local npm/Render Docker build; keep dependency code out of Git
+frontend/qwen_worker.bundle.js

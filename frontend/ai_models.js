@@ -3,7 +3,9 @@
     'use strict';
     let registry = { models: [], bots: [], providers: {} };
     let editingId = null;
-    let loading = false;
+    let settingsPromise = null;
+    let ownerId = null;
+    const LOCAL_MODEL = 'browser-qwen';
     const icons = { staff: 'messages-square', sales: 'chart-no-axes-combined', inventory: 'package-check' };
     const hints = {
         staff: 'Product help, billing and worker onboarding',
@@ -11,6 +13,52 @@
         inventory: 'Stock levels, restock guidance and alerts'
     };
     function byId(id) { return document.getElementById(id); }
+    function localKey(slug) { return 'inven:qwen:v1:' + ownerId + ':' + slug; }
+    function localSelected(slug) {
+        if (!ownerId) return false;
+        try { return window.localStorage.getItem(localKey(slug)) === '1'; }
+        catch (_) { return false; }
+    }
+    function saveLocalSelection(slug, selected) {
+        try {
+            if (selected) window.localStorage.setItem(localKey(slug), '1');
+            else window.localStorage.removeItem(localKey(slug));
+        } catch (_) {
+            throw new Error('This browser blocks local preferences. Enable site storage to select Qwen.');
+        }
+    }
+    window.aiUsesLocalBot = localSelected;
+    window.aiEnsureSettings = function() { return window.aiLoadSettings(); };
+    function qwenStatus(state, detail) {
+        const status = byId('ai-qwen-status');
+        const progress = byId('ai-qwen-progress');
+        if (!status) return;
+        const labels = {
+            loading: 'Loading Qwen model files…',
+            downloading: 'Downloading Qwen model file' + (detail.file ? ': ' + detail.file : '…'),
+            ready: 'Ready · runs entirely on this device',
+            generating: 'Generating locally…',
+            failed: 'Local inference failed; assigned cloud models remain available'
+        };
+        status.textContent = labels[state] || 'Not loaded on this device';
+        if (progress) {
+            progress.classList.toggle('hidden', state !== 'downloading' || !Number.isFinite(detail.percent));
+            if (Number.isFinite(detail.percent)) progress.value = detail.percent;
+        }
+    }
+    if (window.invenQwen) window.invenQwen.onStatus = qwenStatus;
+    window.aiQwenWarmup = async function() {
+        if (!window.invenQwen) return;
+        const button = byId('ai-qwen-download');
+        if (button) button.disabled = true;
+        try {
+            await window.invenQwen.load();
+            message('Qwen3.5-0.8B is ready on this device.', 'success');
+        } catch (error) {
+            qwenStatus('failed', {});
+            message(error.message, 'warning');
+        } finally { if (button) button.disabled = false; }
+    };
     function safe(v) {
         return String(v ?? '').replace(/[&<>"']/g, function(c) {
             return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
@@ -132,7 +180,9 @@
         refreshIcons();
     }
     function modelOptions(selected) {
-        return '<option value="">No model selected</option>' + registry.models.map(function(m) {
+        return '<option value="">No model selected</option>' +
+            '<option value="' + LOCAL_MODEL + '"' + (selected === LOCAL_MODEL ? ' selected' : '') +
+            '>Qwen3.5-0.8B · On this device (WebGPU)</option>' + registry.models.map(function(m) {
             return '<option value="' + m.id + '"' + (selected === m.id ? ' selected' : '') + '>' +
                 safe(m.name) + ' · ' + safe(m.modelId) + '</option>';
         }).join('');
@@ -141,21 +191,22 @@
         const container = byId('ai-bot-list');
         if (!container) return;
         container.innerHTML = registry.bots.map(function(bot) {
-            const assigned = registry.models.some(function(m) { return m.id === bot.modelId; });
+            const onDevice = localSelected(bot.slug);
+            const assigned = onDevice || registry.models.some(function(m) { return m.id === bot.modelId; });
             return '<div class="rounded-2xl border border-slate-200 p-4 sm:p-5">' +
                 '<div class="flex items-start gap-3 mb-4"><span class="flex items-center justify-center w-10 h-10 rounded-xl bg-slate-100 text-indigo-600 shrink-0"><i data-lucide="' + icons[bot.slug] + '" class="w-5 h-5"></i></span>' +
                 '<div class="flex-1 min-w-0"><div class="flex flex-wrap justify-between gap-2"><h4 class="font-bold text-sm text-slate-900">' + safe(bot.name) + '</h4>' +
                 '<span class="text-[10px] font-bold rounded-full px-2.5 py-1 ' + (assigned ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-500') + '">' + (assigned ? '● Active' : 'Unassigned') + '</span></div>' +
                 '<p class="text-xs text-slate-500 mt-1">' + hints[bot.slug] + '</p></div></div>' +
                 '<label for="ai-bot-model-' + bot.slug + '" class="block text-[11px] text-slate-600 font-semibold mb-1.5">Assigned model</label>' +
-                '<select id="ai-bot-model-' + bot.slug + '" class="w-full border border-slate-200 bg-slate-50 rounded-xl text-xs p-3 focus:ring-2 focus:ring-indigo-200 outline-none">' + modelOptions(bot.modelId) + '</select>' +
+                '<select id="ai-bot-model-' + bot.slug + '" class="w-full border border-slate-200 bg-slate-50 rounded-xl text-xs p-3 focus:ring-2 focus:ring-indigo-200 outline-none">' + modelOptions(onDevice ? LOCAL_MODEL : bot.modelId) + '</select>' +
                 '<label for="ai-bot-instructions-' + bot.slug + '" class="block text-[11px] text-slate-600 font-semibold mt-3 mb-1.5">Extra instructions <span class="font-normal text-slate-400">(optional)</span></label>' +
                 '<textarea id="ai-bot-instructions-' + bot.slug + '" rows="2" maxlength="2000" placeholder="e.g. Answer briefly in English and Telugu" class="w-full resize-y border border-slate-200 bg-slate-50 rounded-xl text-xs p-3 focus:ring-2 focus:ring-indigo-200 outline-none">' + safe(bot.extraInstruction) + '</textarea>' +
                 '<div class="mt-3 flex justify-end"><button type="button" onclick="aiSaveBot(' + "'" + bot.slug + "'" + ')" class="text-xs font-semibold px-4 py-2.5 bg-indigo-600 text-white hover:bg-indigo-700 rounded-lg">Save assignment</button></div></div>';
         }).join('');
         byId('ai-model-total').textContent = String(registry.models.length);
         byId('ai-active-total').innerHTML = registry.bots.filter(function(b) {
-            return registry.models.some(function(m) { return m.id === b.modelId; });
+            return localSelected(b.slug) || registry.models.some(function(m) { return m.id === b.modelId; });
         }).length + ' <span class="text-base text-slate-400 font-medium">/ 3</span>';
         refreshIcons();
     }
@@ -168,17 +219,20 @@
         }).join('');
         select.value = registry.bots.some(function(bot) { return bot.slug === old; }) ? old : 'staff';
     }
-    window.aiLoadSettings = async function() {
-        if (loading) return;
-        loading = true;
-        try {
+    window.aiLoadSettings = function() {
+        if (settingsPromise) return settingsPromise;
+        settingsPromise = (async function() {
             registry = await request('/api/ai/config');
+            ownerId = registry.ownerId || null;
             renderModels(); renderBots(); updateChatBotSelect();
-        } catch (err) {
+            return registry;
+        })().catch(function(err) {
+            ownerId = null;
             const list = byId('ai-model-list');
             if (list) list.textContent = 'Could not load AI configuration: ' + err.message;
-            message(err.message, 'warning');
-        } finally { loading = false; }
+            throw err;
+        }).finally(function() { settingsPromise = null; });
+        return settingsPromise;
     };
     function providerOptions() {
         return Object.entries(registry.providers).map(function(p) {
@@ -274,7 +328,7 @@
                 method: id ? 'PUT' : 'POST', body: JSON.stringify(payload)
             });
             aiCloseModelModal();
-            await aiLoadSettings();
+            await window.aiLoadSettings();
             message('AI model connection saved.', 'success');
         } catch (err) {
             showSaveError(err.message);
@@ -284,14 +338,19 @@
     };
     window.aiSaveBot = async function(slug) {
         const raw = byId('ai-bot-model-' + slug).value;
+        const useLocal = raw === LOCAL_MODEL;
+        const current = registry.bots.find(function(bot) { return bot.slug === slug; });
         const payload = {
-            modelId: raw ? Number(raw) : null,
+            // Keep the existing cloud assignment available if Qwen fails on this device.
+            modelId: useLocal ? (current ? current.modelId : null) : (raw ? Number(raw) : null),
             extraInstruction: byId('ai-bot-instructions-' + slug).value
         };
         try {
             await request('/api/ai/bots/' + slug, { method: 'PUT', body: JSON.stringify(payload) });
-            await aiLoadSettings();
-            message('Bot model assignment saved.', 'success');
+            saveLocalSelection(slug, useLocal);
+            await window.aiLoadSettings();
+            message(useLocal ? 'Qwen selected for this browser. Download the model to start.' :
+                'Cloud bot assignment saved.', 'success');
         } catch (err) { message(err.message, 'warning'); }
     };
     window.aiDeleteModel = async function(id) {
@@ -299,7 +358,7 @@
         if (!model || !window.confirm('Delete "' + model.name + '"? Bots using it will be unassigned.')) return;
         try {
             await request('/api/ai/models/' + id, { method: 'DELETE' });
-            await aiLoadSettings();
+            await window.aiLoadSettings();
             message('Model connection removed.', 'info');
         } catch (err) { message(err.message, 'warning'); }
     };

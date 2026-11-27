@@ -18,3 +18,6 @@ backups/
 **/*.dump
 **/*.sql
 .github/
+
+# Built in the Node asset stage
+frontend/qwen_worker.bundle.js
